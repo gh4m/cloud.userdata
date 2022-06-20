@@ -8,7 +8,7 @@ apt-get -y install wireguard
 
 WG_SERVER_IP=$1
 WG_NET_BLOCK=$2
-WG_CLIENTS_PUBLIC_KEY=$3
+WG_CLIENT_PUB_KEY=$3
 WG_CLIENT_IP=$4
 RANDOM_TWO_DIGITS=$((1 + $RANDOM % 9))$((1 + $RANDOM % 9))
 WG_SERVER_PORT=518${RANDOM_TWO_DIGITS}
@@ -27,7 +27,7 @@ PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j A
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -s ${WG_NET_BLOCK} -o ${WG_SERVER_NIC_NAME} -j MASQUERADE
 
 [Peer]
-PublicKey = ${WG_CLIENTS_PUBLIC_KEY}
+PublicKey = ${WG_CLIENT_PUB_KEY}
 PresharedKey = $(cat /etc/wireguard/sharekey)
 AllowedIPs = ${WG_CLIENT_IP}
 EOF

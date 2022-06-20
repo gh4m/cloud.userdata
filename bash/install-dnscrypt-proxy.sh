@@ -6,9 +6,8 @@
 
 ## setup as last in cloud userdata
 
+SET_AD_BLOCKING=$1
 DNSCRYPT_PROXY_VER=2.1.1  ## https://github.com/DNSCrypt/dnscrypt-proxy/releases/latest
-SET_AD_BLOCKING="YES"     ## YES/NO for adding ad blocking to dnscrypt
-
 DNSCRYPT_PROXY_PATH=/opt/dnscrypt-proxy
 DNSCRYPT_PROXY_TOML_FILE=${DNSCRYPT_PROXY_PATH}/dnscrypt-proxy.toml
 
