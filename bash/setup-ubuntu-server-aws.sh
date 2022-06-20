@@ -4,7 +4,7 @@
 ## ubuntu AWS server basic setup
 ##
 
-echo calling $0 ${*}
+echo USERDATA_RUNNING $0 ${*}
 
 apt-get -y update
 apt-get -y dist-upgrade

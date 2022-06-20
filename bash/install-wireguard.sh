@@ -4,7 +4,7 @@
 ## wireguard setup
 ##
 
-echo calling $0 ${*}
+echo USERDATA_RUNNING $0 ${*}
 
 apt-get -y install wireguard
 

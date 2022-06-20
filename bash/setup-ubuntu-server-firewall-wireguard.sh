@@ -4,7 +4,7 @@
 ## ufw - wireguard + dnsproxy
 ##
 
-echo calling $0 ${*}
+echo USERDATA_RUNNING $0 ${*}
 
 WG_NET_BLOCK=$1
 WG_SERVER_PORT=$2
