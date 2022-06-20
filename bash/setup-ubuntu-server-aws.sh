@@ -4,6 +4,8 @@
 ## ubuntu AWS server basic setup
 ##
 
+echo calling $0 ${*}
+
 apt-get -y update
 apt-get -y dist-upgrade
 apt-get -y autoremove

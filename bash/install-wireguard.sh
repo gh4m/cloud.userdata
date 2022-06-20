@@ -4,6 +4,8 @@
 ## wireguard setup
 ##
 
+echo calling $0 ${*}
+
 apt-get -y install wireguard
 
 WG_SERVER_IP=$1
