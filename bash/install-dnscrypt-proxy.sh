@@ -17,6 +17,7 @@ DNSCRYPT_PROXY_TOML_FILE_PATH=${DNSCRYPT_PROXY_PATH}/${DNSCRYPT_PROXY_TOML_FILE_
 mkdir ${DNSCRYPT_PROXY_PATH}
 cd ${DNSCRYPT_PROXY_PATH}
 wget https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/${DNSCRYPT_PROXY_VER}/dnscrypt-proxy-linux_x86_64-${DNSCRYPT_PROXY_VER}.tar.gz
+wget https://raw.githubusercontent.com/DNSCrypt/dnscrypt-proxy/master/utils/generate-domains-blocklist/generate-domains-blocklist.py
 
 systemctl stop systemd-resolved
 systemctl disable systemd-resolved
@@ -47,6 +48,9 @@ then
   (crontab -l 2>/dev/null; echo "25 4 * * * python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_PATH}/blocked-names.txt") | crontab -
   sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+  touch domains-time-restricted.txt
+  touch domains-allowlist.txt
+  python3 /opt/dnscrypt-proxy/generate-domains-blocklist.py -c /opt/dnscrypt-proxy/domains-blocklist.conf -o /opt/dnscrypt-proxy/blocked-names.txt
 fi
 
 ./dnscrypt-proxy -service install
