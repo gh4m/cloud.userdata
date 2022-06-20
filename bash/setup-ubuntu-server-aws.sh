@@ -21,7 +21,6 @@ sed -i "/listen_addresses =/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 hostnamectl set-hostname ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}
 echo "${SERVER__LOCAL_IP} ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}" >> /etc/hosts
 
-timedatectl list-timezones | grep New
 timedatectl set-timezone America/New_York
 timedatectl
 
