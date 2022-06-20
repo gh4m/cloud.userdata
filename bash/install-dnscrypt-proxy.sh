@@ -19,12 +19,6 @@ cd ${DNSCRYPT_PROXY_PATH}
 wget https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/${DNSCRYPT_PROXY_VER}/dnscrypt-proxy-linux_x86_64-${DNSCRYPT_PROXY_VER}.tar.gz
 wget https://raw.githubusercontent.com/DNSCrypt/dnscrypt-proxy/master/utils/generate-domains-blocklist/generate-domains-blocklist.py
 
-systemctl stop systemd-resolved
-systemctl disable systemd-resolved
-
-echo "nameserver 127.0.0.1" > /etc/resolv.conf
-echo "options edns0" >> /etc/resolv.conf
-
 tar xvf dnscrypt-proxy-linux_x86_64-${DNSCRYPT_PROXY_VER}.tar.gz
 mv linux-x86_64/* .
 rmdir linux-x86_64/
@@ -41,7 +35,6 @@ if [ "${SET_AD_BLOCKING}" == "YES" ]
 then
   DNSCRYPT_PROXY_BLOCKLIST_SCRIPT=${DNSCRYPT_PROXY_PATH}/generate-domains-blocklist.py
   DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF=${DNSCRYPT_PROXY_PATH}/domains-blocklist.conf
-  cp ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}.orig
   echo "https://dblw.oisd.nl/" > ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   echo "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" >> ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   ## For automated background updates, the script can be run as a cron job
@@ -52,6 +45,12 @@ then
   touch domains-allowlist.txt
   python3 /opt/dnscrypt-proxy/generate-domains-blocklist.py -c /opt/dnscrypt-proxy/domains-blocklist.conf -o /opt/dnscrypt-proxy/blocked-names.txt
 fi
+
+systemctl stop systemd-resolved
+systemctl disable systemd-resolved
+
+echo "nameserver 127.0.0.1" > /etc/resolv.conf
+echo "options edns0" >> /etc/resolv.conf
 
 ./dnscrypt-proxy -service install
 systemctl enable dnscrypt-proxy.service
