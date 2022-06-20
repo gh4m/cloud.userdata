@@ -16,7 +16,7 @@ SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 SERVER__LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 NAMESERVER_IP=169.254.169.123
 
-sed -i "/listen_addresses =/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
+sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 
 hostnamectl set-hostname ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}
 echo "${SERVER__LOCAL_IP} ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}" >> /etc/hosts

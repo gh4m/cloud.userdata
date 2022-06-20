@@ -18,5 +18,5 @@ ufw default allow routed && \
 ufw allow proto tcp from ${WG_NET_BLOCK} to any port domain && \
 ufw allow proto udp from ${WG_NET_BLOCK} to any port domain && \
 ufw allow proto tcp from 0.0.0.0/0 to any port ssh && \
-ufw allow proto udp from 0.0.0.0/0 to any port ${WG_SERVER_PORT} && \
+ufw allow ${WG_SERVER_PORT}/udp && \
 ufw status verbose
