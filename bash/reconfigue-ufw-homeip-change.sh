@@ -25,7 +25,7 @@ echo $home_cidr_current_value > $home_cidr_previous_file
 
 ## did homeip change?
 home_cidr_value_changed="false"
-if [[ "$home_cidr_current_value" != "$home_cidr_previous_value") ]];
+if [[ "$home_cidr_current_value" != "$home_cidr_previous_value" ]];
 then
   echo home cidr has changed
   home_cidr_value_changed="true"
