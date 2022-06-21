@@ -6,12 +6,12 @@
 
 echo USERDATA_RUNNING $0 ${*}
 
-SERVER___HOSTNAME=$1
-SERVER_DOMAINNAME=$2
-ROUTE53_ZONEID_PRIVATE=$3
-ROUTE53_ZONEID_PUBLIC=$4
-SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-SERVER__LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+WG_SERVER_HOSTNAME=$1
+WG_SERVER_DOMAIN=$2
+AWS_ROUTE53_ZONEID_PRIVATE=$3
+AWS_ROUTE53_ZONEID_PUBLIC=$4
+WG_SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 route53jsonprivate="/var/tmp/route53private.json"
 cat << EOF >> $route53jsonprivate
@@ -21,12 +21,12 @@ cat << EOF >> $route53jsonprivate
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${SERVER_FQDN}",
+        "Name": "${WG_SERVER_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [
 			{
-			  "Value": "${SERVER__LOCAL_IP}"
+			  "Value": "${WG_SERVER_LOCAL_IP}"
 			}
         ]
       }
@@ -34,7 +34,7 @@ cat << EOF >> $route53jsonprivate
   ]
 }
 EOF
-aws route53 change-resource-record-sets --hosted-zone-id $ROUTE53_ZONEID_PRIVATE --change-batch file://$route53jsonprivate
+aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PRIVATE --change-batch file://$route53jsonprivate
 
 route53jsonpublic="/var/tmp/route53public.json"
 cat << EOF >> $route53jsonpublic
@@ -44,12 +44,12 @@ cat << EOF >> $route53jsonpublic
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${SERVER_FQDN}",
+        "Name": "${WG_SERVER_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [
 			{
-			  "Value": "${SERVER_PUBLIC_IP}"
+			  "Value": "${WG_SERVER_PUBLIC_IP}"
 			}
         ]
       }
@@ -57,4 +57,4 @@ cat << EOF >> $route53jsonpublic
   ]
 }
 EOF
-aws route53 change-resource-record-sets --hosted-zone-id $ROUTE53_ZONEID_PUBLIC --change-batch file://$route53jsonpublic
+aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PUBLIC --change-batch file://$route53jsonpublic

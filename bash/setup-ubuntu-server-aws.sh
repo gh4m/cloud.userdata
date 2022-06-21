@@ -14,20 +14,20 @@ $APT_GET_CMD update
 $APT_GET_CMD dist-upgrade
 $APT_GET_CMD autoremove
 
-SERVER___HOSTNAME=$1
-SERVER_DOMAINNAME=$2
-HOMEIP_FQDN=$3
-SERVER_FQDN=${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}
-SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-SERVER__LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+WG_SERVER_HOSTNAME=$1
+WG_SERVER_DOMAIN=$2
+HOME_FQDN=$3
+WG_SERVER_FQDN=${WG_SERVER_HOSTNAME}.${WG_SERVER_DOMAIN}
+WG_SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 NAMESERVER_IP=169.254.169.123
 
 ## sshd on ipv4 only
 sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 
 ## hostname setup
-hostnamectl set-hostname ${SERVER_FQDN}
-echo "${SERVER__LOCAL_IP} ${SERVER_FQDN}" >> /etc/hosts
+hostnamectl set-hostname ${WG_SERVER_FQDN}
+echo "${WG_SERVER_LOCAL_IP} ${WG_SERVER_FQDN}" >> /etc/hosts
 
 timedatectl set-timezone America/New_York
 timedatectl
@@ -42,5 +42,5 @@ SERVER_RECONFIG_SCRIPTPATH=${DOWNLOAD_PATH}/${SERVER_RECONFIG_SCRIPTNAME}
 wget -O ${SERVER_RECONFIG_SCRIPTPATH} https://raw.githubusercontent.com/gh4m/cloud.userdata/main/bash/${SERVER_RECONFIG_SCRIPTNAME}
 chmod +x ${SERVER_RECONFIG_SCRIPTPATH}
 set +eux
-(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH} ${HOMEIP_FQDN}") | crontab -
+(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH} ${HOME_FQDN}") | crontab -
 set -eux
