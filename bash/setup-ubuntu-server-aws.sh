@@ -17,6 +17,7 @@ $APT_GET_CMD autoremove
 SERVER___HOSTNAME=$1
 SERVER_DOMAINNAME=$2
 HOMEIP_FQDN=$3
+SERVER_FQDN=${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}
 SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 SERVER__LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 NAMESERVER_IP=169.254.169.123
@@ -25,8 +26,8 @@ NAMESERVER_IP=169.254.169.123
 sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 
 ## hostname setup
-hostnamectl set-hostname ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}
-echo "${SERVER__LOCAL_IP} ${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}" >> /etc/hosts
+hostnamectl set-hostname ${SERVER_FQDN}
+echo "${SERVER__LOCAL_IP} ${SERVER_FQDN}" >> /etc/hosts
 
 timedatectl set-timezone America/New_York
 timedatectl

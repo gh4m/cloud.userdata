@@ -21,7 +21,7 @@ cat << EOF >> $route53jsonprivate
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}",
+        "Name": "${SERVER_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [
@@ -44,7 +44,7 @@ cat << EOF >> $route53jsonpublic
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${SERVER___HOSTNAME}.${SERVER_DOMAINNAME}",
+        "Name": "${SERVER_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [

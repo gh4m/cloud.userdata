@@ -17,6 +17,11 @@ dsa=/etc/ssh/ssh_host_dsa_key.pub
 [ -f $rsa ]     && ssh-keygen -l -f $rsa     | awk '{printf $2":"$4" "}' >> $host_ssh_fingerprint_file
 [ -f $dsa ]     && ssh-keygen -l -f $dsa     | awk '{printf $2":"$4" "}' >> $host_ssh_fingerprint_file
 
+echo "[[ssh-keyscan -t ed25519 ${SERVER_FQDN} > /tmp/remote-ssh.scan]]" >> $host_ssh_fingerprint_file
+echo "[[ssh-keygen -l -f /tmp/remote-ssh.scan]]" >> $host_ssh_fingerprint_file
+echo "[[## compare /tmp/remote-ssh.scan with emailed fingerprint, if good...]]" >> $host_ssh_fingerprint_file
+echo "[[cat /tmp/remote-ssh.scan >> ~/.ssh/known_hosts]]" >> $host_ssh_fingerprint_file
+
 aws sns publish --topic-arn "$AWS_SNS_URL" \
 --message file://$host_ssh_fingerprint_file \
 --subject "$SERVER_PUBLIC_IP ($HOSTNAME) host ssh fingerprints"
