@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 ## setup this script in cron to run one minute after lamba runs to set home IP in DNS
 ## TTL on A record should be (3.5x60) 210 seconds (set in lambda code)
