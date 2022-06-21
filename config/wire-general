@@ -1,4 +1,8 @@
 
+##
+## wire-general
+##
+
 echo USERDATA_RUNNING $0 ${*}
 
 WG_NET_BLOCK=192.168.110.0/24
@@ -8,4 +12,4 @@ WG_SERVER_IP=192.168.110.10/24
 WG_CLIENT_01_IP=192.168.110.101/32
 WG_CLIENT_01_PUB_KEY=VMhZxpFLOYjUlMGbYTGB6KnwINHmOguPBRkfa9RX0UE=
 
-SET_AD_BLOCKING="YES"     ## YES/NO for adding ad blocking to dnscrypt
+SET_AD_BLOCKING="YES" ## YES/NO to setup ad blocking lists with dnscrypt-proxy
