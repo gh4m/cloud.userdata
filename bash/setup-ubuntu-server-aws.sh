@@ -16,6 +16,7 @@ $APT_GET_CMD autoremove
 
 SERVER___HOSTNAME=$1
 SERVER_DOMAINNAME=$2
+HOMEIP_FQDN=$3
 SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 SERVER__LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 NAMESERVER_IP=169.254.169.123
@@ -40,5 +41,5 @@ SERVER_RECONFIG_SCRIPTPATH=${DOWNLOAD_PATH}/${SERVER_RECONFIG_SCRIPTNAME}
 wget -O ${SERVER_RECONFIG_SCRIPTPATH} https://raw.githubusercontent.com/gh4m/cloud.userdata/main/bash/${SERVER_RECONFIG_SCRIPTNAME}
 chmod +x ${SERVER_RECONFIG_SCRIPTPATH}
 set +eux
-(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH}") | crontab -
+(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH} ${HOMEIP_FQDN}") | crontab -
 set -eux
