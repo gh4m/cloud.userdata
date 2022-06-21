@@ -39,4 +39,6 @@ SERVER_RECONFIG_SCRIPTNAME=reconfigue-ufw-homeip-change.sh
 SERVER_RECONFIG_SCRIPTPATH=${DOWNLOAD_PATH}/${SERVER_RECONFIG_SCRIPTNAME}
 wget -O ${SERVER_RECONFIG_SCRIPTPATH} https://raw.githubusercontent.com/gh4m/cloud.userdata/main/bash/${SERVER_RECONFIG_SCRIPTNAME}
 chmod +x ${SERVER_RECONFIG_SCRIPTPATH}
+set +eux
 (crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH}") | crontab -
+set -eux
