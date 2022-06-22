@@ -16,7 +16,7 @@ WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 ## in /tmp so removed on reboot
 AWS_DNS_PUBLIC_IP_FILE=/tmp/aws-public-ip.txt
-if [[ ! test -f "${AWS_DNS_PUBLIC_IP_FILE}" ]]
+if [[ ! -f "${AWS_DNS_PUBLIC_IP_FILE}" ]]
 then
 
 route53jsonprivate="/var/tmp/route53private.json"
