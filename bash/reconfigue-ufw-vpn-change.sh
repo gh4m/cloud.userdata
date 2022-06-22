@@ -3,6 +3,8 @@ set -eux
 
 ## setup/reconfig FW for vpn ssh access
 ## setup as cron to maintain VPN server access to host
+## wget https://raw.githubusercontent.com/gh4m/cloud.userdata/main/bash/reconfigue-ufw-vpn-change.sh
+## */4 * * * * /path/to/reconfigue-ufw-vpn-change.sh <VPN FQDN>
 
 echo USERDATA_RUNNING $0 ${*}
 
