@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eux
 
+## note: this script not currently deployed
+## pending lambda security group coordination
+
 ## setup/reconfig FW for vpn ssh access
 ## setup as cron to maintain VPN server access to host
 ## wget https://raw.githubusercontent.com/gh4m/cloud.userdata/main/bash/reconfigue-ufw-vpn-change.sh
@@ -17,7 +20,7 @@ ip_mask=/32
 vpn_cidr_previous_file=/var/tmp/vpn_cidr_previous_${fqdn_to_dig_for_vpn_ip}.txt
 vpn__ip__previous_file=/var/tmp/vpn__ip__previous_${fqdn_to_dig_for_vpn_ip}.txt
 test -f $vpn_cidr_previous_file || echo "${not_found_text}" > $vpn_cidr_previous_file
-test -f $vpn__ip__previous_file || echo "${not_found_text}" > $vpn_cidr_previous_file
+test -f $vpn__ip__previous_file || echo "${not_found_text}" > $vpn__ip__previous_file
 
 vpn__ip__just_dug_up=$(dig +short $fqdn_to_dig_for_vpn_ip | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
 if [[ $? -ne 0 ]];
