@@ -19,7 +19,8 @@ dsa=/etc/ssh/ssh_host_dsa_key.pub
 
 echo "[[ssh-keyscan -t ed25519 ${WG_SERVER_FQDN} > /tmp/remote-ssh.scan]]" >> $host_ssh_fingerprint_file
 echo "[[ssh-keygen -l -f /tmp/remote-ssh.scan]]" >> $host_ssh_fingerprint_file
-echo "[[## compare /tmp/remote-ssh.scan with emailed fingerprint, if good...]]" >> $host_ssh_fingerprint_file
+echo "[[## COMPARE FINGERPRINTS (email & file) ##]]" >> $host_ssh_fingerprint_file
+echo "[[sed -i '/${WG_SERVER_FQDN}/d' ~/.ssh/known_hosts]]" >> $host_ssh_fingerprint_file
 echo "[[cat /tmp/remote-ssh.scan >> ~/.ssh/known_hosts]]" >> $host_ssh_fingerprint_file
 
 aws sns publish --topic-arn "$AWS_SNS_ARN" \
