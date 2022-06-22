@@ -20,7 +20,7 @@ if [[ ! -f "${AWS_DNS_PUBLIC_IP_FILE}" ]]
 then
 
 route53jsonprivate="/var/tmp/route53private.json"
-cat << EOF >> $route53jsonprivate
+cat << EOF > $route53jsonprivate
 {
   "Comment": "setup private hostname",
   "Changes": [
@@ -43,7 +43,7 @@ EOF
 aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PRIVATE --change-batch file://$route53jsonprivate
 
 route53jsonpublic="/var/tmp/route53public.json"
-cat << EOF >> $route53jsonpublic
+cat << EOF > $route53jsonpublic
 {
   "Comment": "setup public hostname",
   "Changes": [
@@ -68,4 +68,3 @@ aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PUB
 echo "${WG_SERVER_PUBLIC_IP}" > ${AWS_DNS_PUBLIC_IP_FILE}
 
 fi
-
