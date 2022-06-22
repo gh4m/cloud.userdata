@@ -2,6 +2,7 @@
 set -eux
 
 ## setup/reconfig FW for vpn ssh access
+## setup as cron to maintain VPN server access to host
 
 echo USERDATA_RUNNING $0 ${*}
 
@@ -11,8 +12,8 @@ ufw_cmd=/usr/sbin/ufw
 ## vpn hostname for access passed to script
 fqdn_to_dig_for_vpn_ip=$1
 ip_mask=/32
-vpn_cidr_previous_file=/var/tmp/vpn_cidr_previous_file.txt
-vpn__ip__previous_file=/var/tmp/vpn_cidr_previous_file.txt
+vpn_cidr_previous_file=/var/tmp/vpn_cidr_previous_${fqdn_to_dig_for_vpn_ip}.txt
+vpn__ip__previous_file=/var/tmp/vpn__ip__previous_${fqdn_to_dig_for_vpn_ip}.txt
 test -f $vpn_cidr_previous_file || echo "${not_found_text}" > $vpn_cidr_previous_file
 test -f $vpn__ip__previous_file || echo "${not_found_text}" > $vpn_cidr_previous_file
 
