@@ -38,14 +38,15 @@ then
   echo "https://dblw.oisd.nl/" > ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   echo "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" >> ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   ## For automated background updates, the script can be run as a cron job
-  set +eux
-  (crontab -l 2>/dev/null; echo "25 4 * * * python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_PATH}/blocked-names.txt") | crontab -
-  set -eux
+  DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_PATH}/blocked-names.txt"
+  set +x
+  (crontab -l 2>/dev/null; echo "25 4 * * * ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}") | crontab -
+  set -x
   sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   touch domains-time-restricted.txt
   touch domains-allowlist.txt
-  python3 /opt/dnscrypt-proxy/generate-domains-blocklist.py -c /opt/dnscrypt-proxy/domains-blocklist.conf -o /opt/dnscrypt-proxy/blocked-names.txt
+  ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}
 fi
 
 systemctl stop systemd-resolved

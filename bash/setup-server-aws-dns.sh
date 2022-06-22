@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 ##
 ## setup dns
@@ -12,6 +13,11 @@ AWS_ROUTE53_ZONEID_PRIVATE=$3
 AWS_ROUTE53_ZONEID_PUBLIC=$4
 WG_SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+
+## in /tmp so removed on reboot
+AWS_DNS_PUBLIC_IP_FILE=/tmp/aws-public-ip.txt
+if [[ ! test -f "${AWS_DNS_PUBLIC_IP_FILE}" ]]
+then
 
 route53jsonprivate="/var/tmp/route53private.json"
 cat << EOF >> $route53jsonprivate
@@ -58,3 +64,8 @@ cat << EOF >> $route53jsonpublic
 }
 EOF
 aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PUBLIC --change-batch file://$route53jsonpublic
+
+echo "${WG_SERVER_PUBLIC_IP}" > ${AWS_DNS_PUBLIC_IP_FILE}
+
+fi
+
