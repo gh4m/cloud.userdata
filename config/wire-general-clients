@@ -3,6 +3,7 @@
 ## wire-general
 ##
 
+## avoid 192.168.122 is used by dev virbr0
 WG_VPN_NETWORK_BASE_PART="192.168.110"
 
 WG_CLIENT_LIST="WG_CLIENT_OCTOBER"
