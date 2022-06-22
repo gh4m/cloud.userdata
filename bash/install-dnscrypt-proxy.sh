@@ -55,6 +55,7 @@ fi
 systemctl stop systemd-resolved
 systemctl disable systemd-resolved
 
+/bin/rm -f /etc/resolv.conf
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 echo "options edns0" >> /etc/resolv.conf
 
