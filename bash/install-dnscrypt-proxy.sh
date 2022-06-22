@@ -38,10 +38,10 @@ then
   echo "https://dblw.oisd.nl/" > ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   echo "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" >> ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   ## For automated background updates, the script can be run as a cron job
-  DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_PATH}/blocked-names.txt"
-  set +x
+  DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="cd ${DNSCRYPT_PROXY_PATH} && python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_PATH}/blocked-names.txt"
+  set +e
   (crontab -l 2>/dev/null; echo "25 4 * * * ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}") | crontab -
-  set -x
+  set -e
   sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   touch domains-time-restricted.txt
