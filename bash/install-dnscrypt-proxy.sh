@@ -30,7 +30,10 @@ sed -i "/log_level = 2/c\log_level = 2" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/file = 'query.log'/c\file = 'query.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/file = 'nx.log'/c\file = 'nx.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/log_file = 'dnscrypt-proxy.log'/c\log_file = 'dnscrypt-proxy.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
-sed -i "/netprobe_address =/c\netprobe_address = '9.9.9.9:443'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/netprobe_address =/c\netprobe_address = '8.8.8.8:53'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/bootstrap_resolvers =/c\bootstrap_resolvers = ['8.8.8.8:53']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/disabled_server_names =/c\disabled_server_names = ['google', 'google-ipv6']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/lb_strategy =/c\lb_strategy = 'ph'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 
 if [ "${SET_AD_BLOCKING}" == "YES" ]
 then
