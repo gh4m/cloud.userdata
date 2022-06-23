@@ -50,6 +50,7 @@ then
   DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_BLOCKED_NAMES_CONF} -r ${DNSCRYPT_PROXY_TIME_RESTRICTED_CONF} -a ${DNSCRYPT_PROXY_ALLOW_LIST_CONF}"
   set +e
   (crontab -l 2>/dev/null; echo "25 4 * * * ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}") | crontab -
+  (crontab -l 2>/dev/null; echo "30 4 * * * systemctl restart dnscrypt-proxy.service") | crontab -
   set -e
   sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
