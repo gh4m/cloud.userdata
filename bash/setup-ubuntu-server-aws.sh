@@ -6,6 +6,8 @@
 
 echo USERDATA_RUNNING $0 ${*}
 
+snap list | grep ^amazon-ssm-agent && snap remove amazon-ssm-agent
+
 APT_DPKG_VAR="DEBIAN_FRONTEND=noninteractive"
 APT_DPKG_OPT="-o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 APT_GET_CMD="eval $APT_DPKG_VAR apt-get -y $APT_DPKG_OPT"
