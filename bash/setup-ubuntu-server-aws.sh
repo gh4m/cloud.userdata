@@ -45,5 +45,4 @@ wget -O ${SERVER_RECONFIG_SCRIPTPATH} https://raw.githubusercontent.com/gh4m/clo
 chmod +x ${SERVER_RECONFIG_SCRIPTPATH}
 set +e
 (crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH} ${HOME_FQDN}") | crontab -
-crontab -l
 set -e
