@@ -12,11 +12,14 @@ WG_SERVER_PORT=$2
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 sysctl -p
 
-ufw --force reset && \
-ufw --force enable && \
-ufw default allow routed && \
-ufw allow proto tcp from ${WG_NETWORK_VPN_CIDR} to any port domain && \
-ufw allow proto udp from ${WG_NETWORK_VPN_CIDR} to any port domain && \
-ufw allow proto tcp from 0.0.0.0/0 to any port ssh && \
-ufw allow ${WG_SERVER_PORT}/udp && \
+ufw --force reset
+ufw --force enable
+ufw default allow routed
+ufw allow proto tcp from ${WG_NETWORK_VPN_CIDR} to any port domain
+ufw allow proto udp from ${WG_NETWORK_VPN_CIDR} to any port domain
+ufw allow proto tcp from 0.0.0.0/0 to any port ssh
+ufw allow ${WG_SERVER_PORT}/udp
+ufw deny out 53/any
+ufw deny out 853/any
+ufw deny out 5353/any
 ufw status verbose
