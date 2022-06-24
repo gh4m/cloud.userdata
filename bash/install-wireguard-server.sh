@@ -6,7 +6,7 @@
 
 echo USERDATA_RUNNING $0 ${*}
 
-$APT_GET_CMD install wireguard
+wg > /dev/null 2> /dev/null || $APT_GET_CMD install wireguard
 
 WG_SERVER_VPN_CIDR=$1
 WG_NETWORK_VPN_CIDR=$2
