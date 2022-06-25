@@ -5,8 +5,6 @@ set -eux
 ## TTL on A record should be (3.5x60) 210 seconds (set in lambda code)
 ## 3-59/4 * * * * /root/cron-scripts/reconfigue-for-new-homeip.sh
 
-echo USERDATA_RUNNING $0 ${*}
-
 ## DNS hostname to use to lookup home ip
 fqdn_to_dig_for_home_ip=$1
 ip_mask=/32

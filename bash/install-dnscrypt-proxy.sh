@@ -6,9 +6,6 @@
 
 ## setup as last in cloud userdata
 
-echo USERDATA_RUNNING $0 ${*}
-
-SET_AD_BLOCKING=$1
 DNSCRYPT_PROXY_VER=2.1.1  ## https://github.com/DNSCrypt/dnscrypt-proxy/releases/latest
 DNSCRYPT_PROXY_PATH=/opt/dnscrypt-proxy
 DNSCRYPT_PROXY_TOML_FILE_NAME=dnscrypt-proxy.toml

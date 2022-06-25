@@ -1,0 +1,16 @@
+
+##
+## wire-random-server
+##
+
+WG_CLOUDVPN_SERVER_LISTEN_PORT="51811"
+WG_CLOUDVPN_SERVER_PUBLIC_KEY=nkeEwQHF3fTKiify6ScOc0UvcJyzakaPjjN9JiRbRRw=
+
+## avoid using 192.168.122 NETWORK_BASE as it is used by virbr0
+
+WG_CLOUDVPN_SERVER_NETWORK_BASE="192.168.120"
+WG_CLOUDVPN_SERVER_NETWORK_MASK="24"
+WG_CLOUDVPN_SERVER_IP_END="10"
+
+## client config file in config/<name>-client
+WG_CLOUDVPN_SERVER_CLIENT_LIST="wire-random"
