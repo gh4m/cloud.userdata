@@ -11,7 +11,7 @@ ip_mask=/32
 home_cidr_previous_file=/var/tmp/home_cidr_previous_file.txt
 home__ip__previous_file=/var/tmp/home_cidr_previous_file.txt
 test -f $home_cidr_previous_file || echo "Anywhere" > $home_cidr_previous_file
-test -f $home__ip__previous_file || echo "Anywhere" > $home_cidr_previous_file
+test -f $home__ip__previous_file || echo "Anywhere" > $home__ip__previous_file
 
 home__ip__just_dug_up=$(dig +short $fqdn_to_dig_for_home_ip | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
 if [[ $? -ne 0 ]];
