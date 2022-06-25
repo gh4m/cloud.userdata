@@ -33,11 +33,3 @@ sed -i "/pool ntp.ubuntu.com/c\server ${WG_CLOUDVPN_NAMESERVER_IP_ADDR} prefer i
 sed -i "/pool /c\#" /etc/chrony/chrony.conf
 systemctl restart chrony
 
-## setup reconfig script for home ip change
-SERVER_RECONFIG_SCRIPTNAME=reconfigue-ufw-homeip-change.sh
-SERVER_RECONFIG_SCRIPTPATH=${DOWNLOAD_PATH}/${SERVER_RECONFIG_SCRIPTNAME}
-wget -O ${SERVER_RECONFIG_SCRIPTPATH} https://raw.githubusercontent.com/gh4m/cloud.userdata.scripts/main/bash/${SERVER_RECONFIG_SCRIPTNAME}
-chmod +x ${SERVER_RECONFIG_SCRIPTPATH}
-set +e
-(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SERVER_RECONFIG_SCRIPTPATH} ${HOME_FQDN}") | crontab -
-set -e
