@@ -31,6 +31,10 @@ sed -i "/netprobe_address =/c\netprobe_address = '8.8.8.8:53'" ${DNSCRYPT_PROXY_
 sed -i "/bootstrap_resolvers =/c\bootstrap_resolvers = ['8.8.8.8:53','1.1.1.1:53']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/disabled_server_names =/c\disabled_server_names = ['google', 'google-ipv6','cloudflare','cloudflare-ipv6']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/lb_strategy =/c\lb_strategy = 'ph'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/cache_min_ttl =/c\cache_min_ttl = 1800" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/cache_max_ttl =/c\cache_max_ttl = 3600" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/cache_neg_min_ttl =/c\cache_neg_min_ttl = 15" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+sed -i "/cache_neg_min_ttl =/c\cache_neg_min_ttl = 120" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 
 if [ "${SET_AD_BLOCKING}" == "YES" ]
 then
