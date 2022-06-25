@@ -27,12 +27,12 @@ cd /etc/wireguard/config
 
 ## source server config file
 WG_CLOUDVPN_SERVER_CONFIG_FILE=/etc/wireguard/config/${WG_CLOUDVPN_SERVER_HOSTNAME}-server
-test -f ${WG_CLOUDVPN_SERVER_CONFIG_FILE} || wget -O ${WG_CLOUDVPN_SERVER_HOSTNAME}-server https://raw.githubusercontent.com/gh4m/cloud.userdata.scripts/main/config/${WG_CLOUDVPN_SERVER_HOSTNAME}-server
+cp ${USERDATA_CONFIG}/${WG_CLOUDVPN_SERVER_HOSTNAME}-server ${WG_CLOUDVPN_SERVER_CONFIG_FILE}
 . ${WG_CLOUDVPN_SERVER_CONFIG_FILE}
 
 ## source this host client config file
 WG_CLOUDVPN_CLIENT_CONFIG_FILE=/etc/wireguard/config/${WG_CLOUDVPN_CLIENT_HOSTNAME}-client
-test -f ${WG_CLOUDVPN_CLIENT_CONFIG_FILE} || wget -O ${WG_CLOUDVPN_CLIENT_HOSTNAME}-client https://raw.githubusercontent.com/gh4m/cloud.userdata.scripts/main/config/${WG_CLOUDVPN_CLIENT_HOSTNAME}-client
+cp ${USERDATA_CONFIG}/${WG_CLOUDVPN_CLIENT_HOSTNAME}-server ${WG_CLOUDVPN_CLIENT_CONFIG_FILE}
 . ${WG_CLOUDVPN_CLIENT_CONFIG_FILE}
 
 ! test -z "${WG_CLOUDVPN_SERVER_LISTEN_PORT}"  || (echo "ERROR: WG_CLOUDVPN_SERVER_LISTEN_PORT  is not set" && exit 5)
