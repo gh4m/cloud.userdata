@@ -25,6 +25,6 @@ echo "[[cat /tmp/remote-ssh.scan >> ~/.ssh/known_hosts]]" >> $host_ssh_fingerpri
 
 aws sns publish --topic-arn "$AWS_SNS_ARN" \
 --message file://$host_ssh_fingerprint_file \
---subject "$WG_SERVER_PUBLIC_IP ($HOSTNAME) host ssh fingerprints"
+--subject "$WG_SERVER_PUBLIC_IP_ADDR ($HOSTNAME) host ssh fingerprints"
 
 rm -f $host_ssh_fingerprint_file

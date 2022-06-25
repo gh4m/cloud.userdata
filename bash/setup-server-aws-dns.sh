@@ -8,12 +8,12 @@ set -eux
 echo USERDATA_RUNNING $0 ${*}
 
 WG_SERVER_HOSTNAME=$1
-WG_SERVER_DOMAIN=$2
-WG_SERVER_FQDN=${WG_SERVER_HOSTNAME}.${WG_SERVER_DOMAIN}
+WG_CLOUDVPN_SERVER_DOMAIN_NAME=$2
+WG_SERVER_FQDN=${WG_SERVER_HOSTNAME}.${WG_CLOUDVPN_SERVER_DOMAIN_NAME}
 AWS_ROUTE53_ZONEID_PRIVATE=$3
 AWS_ROUTE53_ZONEID_PUBLIC=$4
-WG_SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+WG_SERVER_PUBLIC_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+WG_SERVER_LOCAL_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 ## in /tmp so removed on reboot
 AWS_DNS_PUBLIC_IP_FILE=/tmp/aws-public-ip.txt
@@ -33,7 +33,7 @@ cat << EOF > $route53jsonprivate
         "TTL": 300,
         "ResourceRecords": [
 			{
-			  "Value": "${WG_SERVER_LOCAL_IP}"
+			  "Value": "${WG_SERVER_LOCAL_IP_ADDR}"
 			}
         ]
       }
@@ -56,7 +56,7 @@ cat << EOF > $route53jsonpublic
         "TTL": 300,
         "ResourceRecords": [
 			{
-			  "Value": "${WG_SERVER_PUBLIC_IP}"
+			  "Value": "${WG_SERVER_PUBLIC_IP_ADDR}"
 			}
         ]
       }
@@ -66,6 +66,6 @@ cat << EOF > $route53jsonpublic
 EOF
 aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PUBLIC --change-batch file://$route53jsonpublic
 
-echo "${WG_SERVER_PUBLIC_IP}" > ${AWS_DNS_PUBLIC_IP_FILE}
+echo "${WG_SERVER_PUBLIC_IP_ADDR}" > ${AWS_DNS_PUBLIC_IP_FILE}
 
 fi

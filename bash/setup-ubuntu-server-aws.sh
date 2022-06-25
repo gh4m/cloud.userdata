@@ -17,24 +17,24 @@ $APT_GET_CMD dist-upgrade
 $APT_GET_CMD autoremove
 
 WG_SERVER_HOSTNAME=$1
-WG_SERVER_DOMAIN=$2
+WG_CLOUDVPN_SERVER_DOMAIN_NAME=$2
 HOME_FQDN=$3
-WG_SERVER_FQDN=${WG_SERVER_HOSTNAME}.${WG_SERVER_DOMAIN}
-WG_SERVER_PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-WG_SERVER_LOCAL_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-NAMESERVER_IP=169.254.169.123
+WG_SERVER_FQDN=${WG_SERVER_HOSTNAME}.${WG_CLOUDVPN_SERVER_DOMAIN_NAME}
+WG_SERVER_PUBLIC_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+WG_SERVER_LOCAL_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+NAMESERVER_IP_ADDR=169.254.169.123
 
 ## sshd on ipv4 only
 sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 
 ## hostname setup
 hostnamectl set-hostname ${WG_SERVER_FQDN}
-echo "${WG_SERVER_LOCAL_IP} ${WG_SERVER_FQDN}" >> /etc/hosts
+echo "${WG_SERVER_LOCAL_IP_ADDR} ${WG_SERVER_FQDN}" >> /etc/hosts
 
 timedatectl set-timezone America/New_York
 timedatectl
 
-sed -i "/pool ntp.ubuntu.com/c\server ${NAMESERVER_IP} prefer iburst minpoll 4 maxpoll 4" /etc/chrony/chrony.conf
+sed -i "/pool ntp.ubuntu.com/c\server ${NAMESERVER_IP_ADDR} prefer iburst minpoll 4 maxpoll 4" /etc/chrony/chrony.conf
 sed -i "/pool /c\#" /etc/chrony/chrony.conf
 systemctl restart chrony
 
