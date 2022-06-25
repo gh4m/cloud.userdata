@@ -4,7 +4,6 @@
 ##
 
 WG_CLOUDVPN_SERVER_LISTEN_PORT="51811"
-WG_CLOUDVPN_SERVER_PUBLIC_KEY=nkeEwQHF3fTKiify6ScOc0UvcJyzakaPjjN9JiRbRRw=
 
 ## avoid using 192.168.122 NETWORK_BASE as it is used by virbr0
 
