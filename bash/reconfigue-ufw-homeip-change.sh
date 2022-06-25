@@ -9,7 +9,7 @@ set -eux
 fqdn_to_dig_for_home_ip=$1
 ip_mask=/32
 home_cidr_previous_file=/var/tmp/home_cidr_previous_file.txt
-home__ip__previous_file=/var/tmp/home_cidr_previous_file.txt
+home__ip__previous_file=/var/tmp/home__ip__previous_file.txt
 test -f $home_cidr_previous_file || echo "Anywhere" > $home_cidr_previous_file
 test -f $home__ip__previous_file || echo "Anywhere" > $home__ip__previous_file
 
