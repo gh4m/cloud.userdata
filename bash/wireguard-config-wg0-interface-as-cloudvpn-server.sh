@@ -25,6 +25,11 @@ fi
 test -d /etc/wireguard/config || mkdir /etc/wireguard/config
 cd /etc/wireguard/config
 
+## userdata file directory (launch userdata script hardcodes this path)
+USERDATA_PATH=/root/userdata
+USERDATA_BASH=${USERDATA_PATH}/bash
+USERDATA_CONFIG=${USERDATA_PATH}/config
+
 ## source server config file
 WG_CLOUDVPN_SERVER_CONFIG_FILE=/etc/wireguard/config/${WG_CLOUDVPN_SERVER_HOSTNAME}-server
 cp ${USERDATA_CONFIG}/${WG_CLOUDVPN_SERVER_HOSTNAME}-server ${WG_CLOUDVPN_SERVER_CONFIG_FILE}
