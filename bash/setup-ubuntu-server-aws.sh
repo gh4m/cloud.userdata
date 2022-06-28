@@ -25,6 +25,9 @@ sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 ## hostname setup
 hostnamectl set-hostname ${WG_CLOUDVPN_SERVER_FQDN}
 echo "${WG_CLOUDVPN_PRIVATE_IP_ADDR} ${WG_CLOUDVPN_SERVER_FQDN}" >> /etc/hosts
+## home host setup
+HOME_FQDN_IP_ADDR=$(dig +short ${HOME_FQDN} | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
+echo "${HOME_FQDN_IP_ADDR} ${HOME_FQDN}" >> /etc/hosts
 
 timedatectl set-timezone America/New_York
 timedatectl
