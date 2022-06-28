@@ -65,12 +65,7 @@ then
 	! test -z "${WG_CLOUDVPN_SERVER_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_SERVER_LISTEN_PORT is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_SERVER_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_SERVER_DEVICE_NAME is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_INTERNET_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_INTERNET_DEVICE_NAME is not set" && exit 5)
-	! test -z "${HOME_FQDN}" || (echo "ERROR: HOME_FQDN is not set" && exit 5)
 	set -u
-
-	## home host setup
-	HOME_FQDN_IP_ADDR=$(dig +short ${HOME_FQDN} | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
-	echo "${HOME_FQDN_IP_ADDR} ${HOME_FQDN}" >> /etc/hosts
 
 	##
 	## iptables firewall setup
@@ -91,7 +86,7 @@ then
 		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 		ufw ${UFW_ACTION} allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
-		ufw ${UFW_ACTION} allow proto tcp from ${HOME_FQDN_IP_ADDR}/32 to any port ssh
+		ufw ${UFW_ACTION} allow proto tcp from 0.0.0.0/0 to any port ssh
 		ufw ${UFW_ACTION} allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
 		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
 		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
@@ -100,12 +95,12 @@ then
 		ufw ${UFW_ACTION} deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
 		if [[ "${WG_POST_UPDOWN_ACTION}" == "down" ]]
 		then
-			ufw allow proto tcp from ${HOME_FQDN_IP_ADDR}/32 to any port ssh
+			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		fi
 		ufw ${UFW_ACTION} status verbose
 		## setup files for homeip cron script
-		echo "${HOME_FQDN_IP_ADDR}/32" > /var/tmp/home_cidr_previous_file.txt
-		echo "${HOME_FQDN_IP_ADDR}" > /var/tmp/home__ip__previous_file.txt
+		rm -f /var/tmp/home_cidr_previous_file.txt
+		rm -f /var/tmp/home__ip__previous_file.txt
 	fi
 
 	##

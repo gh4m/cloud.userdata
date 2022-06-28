@@ -11,9 +11,9 @@ ufw --force reset
 ufw --force enable
 ufw logging low
 ufw default allow routed
-ufw allow proto tcp from ${HOME_FQDN_IP_ADDR}/32 to any port ssh
+ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 ufw status verbose
 
 ## setup files for homeip cron script
-echo "${HOME_FQDN_IP_ADDR}/32" > /var/tmp/home_cidr_previous_file.txt
-echo "${HOME_FQDN_IP_ADDR}" > /var/tmp/home__ip__previous_file.txt
+rm -f /var/tmp/home_cidr_previous_file.txt
+rm -f /var/tmp/home__ip__previous_file.txt
