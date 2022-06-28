@@ -65,7 +65,7 @@ cd /etc/wireguard/
 
 WG_POST_UPDOWN_CONFIG_FILE=/etc/wireguard/config/wireguard-postupdown.config.cloud
 WG_POST_UPDOWN_CONFIG_SCRIPT=/etc/wireguard/config/wireguard-postupdown.sh
-test -f ${WG_POST_UPDOWN_CONFIG_SCRIPT} || (echo "ERROR: file ${WG_POST_UPDOWN_CONFIG_SCRIPT} does not exist" && exit 5)
+cp ${USERDATA_CONFIG}/wireguard-postupdown.sh ${WG_POST_UPDOWN_CONFIG_SCRIPT}
 rm -f ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_SERVER_DEVICE_NAME=$WG_CLOUDVPN_SERVER_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_SERVER_NETWORK_CIDR=$WG_CLOUDVPN_SERVER_NETWORK_CIDR" >> ${WG_POST_UPDOWN_CONFIG_FILE}
