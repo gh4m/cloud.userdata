@@ -3,27 +3,27 @@ set -eux
 # -x needed for seeing lines for RTNETLINK answers: File exists errors
 
 ##
-## wireguard-postupdown.sh
+## wireguard-postupdown.sh ## run this script instead of wg-quick up wg0 ##
 ##
 
-WG_POST_UPDOWN_TYPE_ERR_MSG="two arguments required. 1st must be [cloud]. 2nd must be [up|down]"
+WG_POST_UPDOWN_ERR_MSG="two arguments required. 1st must be [cloud]. 2nd must be [up|down]"
 set +u
 WG_POST_UPDOWN_TYPE=$1
 WG_POST_UPDOWN_ACTION=$2
-! test -z "${WG_POST_UPDOWN_TYPE}"   || (echo "${WG_POST_UPDOWN_TYPE_ERR_MSG}" && exit 5)
-! test -z "${WG_POST_UPDOWN_ACTION}" || (echo "${WG_POST_UPDOWN_TYPE_ERR_MSG}" && exit 5)
+! test -z "${WG_POST_UPDOWN_TYPE}"   || (echo "${WG_POST_UPDOWN_ERR_MSG}" && exit 5)
+! test -z "${WG_POST_UPDOWN_ACTION}" || (echo "${WG_POST_UPDOWN_ERR_MSG}" && exit 5)
 set -u
 if [[ "$#" -ne 2 ]]; then
-	echo "${WG_POST_UPDOWN_TYPE_ERR_MSG}"
+	echo "${WG_POST_UPDOWN_ERR_MSG}"
 fi
 if echo ${WG_POST_UPDOWN_TYPE} | egrep -v '^cloud$' > /dev/null
 then
-    echo "${WG_POST_UPDOWN_TYPE_ERR_MSG}"
+    echo "${WG_POST_UPDOWN_ERR_MSG}"
     exit 5
 fi
 if echo ${WG_POST_UPDOWN_ACTION} | egrep -v '^up$|^down$' > /dev/null
 then
-    echo "${WG_POST_UPDOWN_TYPE_ERR_MSG}"
+    echo "${WG_POST_UPDOWN_ERR_MSG}"
     exit 5
 fi
 echo "WG_POST_UPDOWN_TYPE=${WG_POST_UPDOWN_TYPE}"
@@ -56,6 +56,8 @@ else
 	FIREWALLD_PORT_ACTION="--remove-port"
 fi
 
+MY_PUBLIC_IP=$(curl -s ifconfig.me 2> /dev/null || curl -s ipinfo.io/ip 2> /dev/null)
+
 if [[ "${WG_POST_UPDOWN_TYPE}" == "cloud" ]]
 then
 
@@ -86,7 +88,6 @@ then
 		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 		ufw ${UFW_ACTION} allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
-		ufw ${UFW_ACTION} allow proto tcp from 0.0.0.0/0 to any port ssh
 		ufw ${UFW_ACTION} allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
 		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
 		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
@@ -95,10 +96,15 @@ then
 		ufw ${UFW_ACTION} deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
 		if [[ "${WG_POST_UPDOWN_ACTION}" == "down" ]]
 		then
-			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
+			ufw route deny in on ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
+			ufw route deny in out ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
+		else
+			ufw route allow in on ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
+			ufw route allow in out ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
 		fi
 		ufw ${UFW_ACTION} status verbose
 		## setup files for homeip cron script
+		ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		rm -f /var/tmp/home_cidr_previous_file.txt
 		rm -f /var/tmp/home__ip__previous_file.txt
 	fi
@@ -108,8 +114,9 @@ then
 	##
 
 	## forward and route wg packets
-	iptables ${IPTABLE_ACTION_FLAG} FORWARD -i ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
-	iptables ${IPTABLE_ACTION_FLAG} FORWARD -o ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
-	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j MASQUERADE
+	# iptables ${IPTABLE_ACTION_FLAG} FORWARD -i ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
+	# iptables ${IPTABLE_ACTION_FLAG} FORWARD -o ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
+	# iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j MASQUERADE
+	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j SNAT --to-source ${MY_PUBLIC_IP}
 
 fi
