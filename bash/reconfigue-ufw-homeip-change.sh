@@ -19,8 +19,8 @@ home__ip__just_dug_up=$(dig +short $fqdn_to_dig_for_home_ip | tail -n1 | grep -E
 if [[ $? -ne 0 ]];
 then
   echo did not find a home ip from dig with $fqdn_to_dig_for_home_ip
-  home__ip__just_dug_up=Anywhere
-  home__ip__for_etc_hosts=0.0.0.0
+  home__ip__just_dug_up="Anywhere"
+  home__ip__for_etc_hosts="0.0.0.0"
   ip_mask=""
 else
   home__ip__for_etc_hosts=$home__ip__just_dug_up
