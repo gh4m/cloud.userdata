@@ -28,15 +28,18 @@ sed -i "/file = 'query.log'/c\file = 'query.log'" ${DNSCRYPT_PROXY_TOML_FILE_PAT
 sed -i "/file = 'nx.log'/c\file = 'nx.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/log_file = 'dnscrypt-proxy.log'/c\log_file = 'dnscrypt-proxy.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/netprobe_address =/c\netprobe_address = '8.8.8.8:53'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+## set bootstrap 
 sed -i "/bootstrap_resolvers =/c\bootstrap_resolvers = ['8.8.8.8:53','1.1.1.1:53']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+## prevent bootstrap from user queries
 sed -i "/disabled_server_names =/c\disabled_server_names = ['google', 'google-ipv6','cloudflare','cloudflare-ipv6']" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+## random pick from upper half
 sed -i "/lb_strategy =/c\lb_strategy = 'ph'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/cache_min_ttl =/c\cache_min_ttl = 1800" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/cache_max_ttl =/c\cache_max_ttl = 3600" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/cache_neg_min_ttl =/c\cache_neg_min_ttl = 15" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 sed -i "/cache_neg_min_ttl =/c\cache_neg_min_ttl = 120" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
 
-if [ "${SET_AD_BLOCKING}" == "YES" ]
+if [ "${SETUP_DNSCRYPT_PROXY_BLOCKING}" == "YES" ]
 then
   DNSCRYPT_PROXY_BLOCKLIST_SCRIPT=${DNSCRYPT_PROXY_PATH}/generate-domains-blocklist.py
   DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF=${DNSCRYPT_PROXY_PATH}/domains-blocklist.conf
@@ -47,14 +50,15 @@ then
   touch ${DNSCRYPT_PROXY_ALLOW_LIST_CONF}
   echo "https://dblw.oisd.nl/" > ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   echo "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" >> ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
+  sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+  sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   ## For automated background updates, the script can be run as a cron job
   DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_BLOCKED_NAMES_CONF} -r ${DNSCRYPT_PROXY_TIME_RESTRICTED_CONF} -a ${DNSCRYPT_PROXY_ALLOW_LIST_CONF}"
   set +e
   (crontab -l 2>/dev/null; echo "25 4 * * * ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}") | crontab -
   (crontab -l 2>/dev/null; echo "30 4 * * * systemctl restart dnscrypt-proxy.service") | crontab -
   set -e
-  sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
-  sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+  ## setup DNSCRYPT_PROXY_BLOCKED_NAMES_CONF before reboot
   ${DNSCRYPT_PROXY_BLOCKLIST_RUNCMD}
 fi
 
@@ -66,5 +70,5 @@ echo "nameserver 127.0.0.1" > /etc/resolv.conf
 echo "options edns0" >> /etc/resolv.conf
 
 ./dnscrypt-proxy -service install
-systemctl enable dnscrypt-proxy.service
 systemctl stop dnscrypt-proxy.service
+systemctl enable dnscrypt-proxy.service

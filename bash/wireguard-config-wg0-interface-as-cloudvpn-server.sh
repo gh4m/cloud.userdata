@@ -8,7 +8,7 @@ set -eu
 set +u
 ! test -z "${WG_CLOUDVPN_SERVER_HOSTNAME}" || WG_CLOUDVPN_SERVER_HOSTNAME=$(hostname | awk -F. '{print $1}')
 set -u
-## cloud VPN client hostname (on local network) is same as the cloud VPN server hostname (on VPS provider)
+## cloud VPN client hostname (vpn server on local network) is same as the hostname for the cloud VPN server (on VPS provider)
 ## domain name for the hostname differs local vs cloud
 WG_CLOUDVPN_CLIENT_HOSTNAME=${WG_CLOUDVPN_SERVER_HOSTNAME}
 
@@ -27,27 +27,33 @@ fi
 test -d /etc/wireguard/config || mkdir /etc/wireguard/config
 cd /etc/wireguard/config
 
-## userdata file directory (the VPS launch userdata script hardcodes this path, keep in sync)
+## userdata directory (the VPS launch userdata script hardcodes USERDATA_* var & path, keep in sync)
 USERDATA_PATH=/root/userdata
 USERDATA_BASH=${USERDATA_PATH}/bash
 USERDATA_CONFIG=${USERDATA_PATH}/config
 
-## source server config file
+## source this server's config file
 WG_CLOUDVPN_SERVER_CONFIG_FILE=/etc/wireguard/config/${WG_CLOUDVPN_SERVER_HOSTNAME}-server
+## get latest from USERDATA_CONFIG
 cp -f ${USERDATA_CONFIG}/${WG_CLOUDVPN_SERVER_HOSTNAME}-server ${WG_CLOUDVPN_SERVER_CONFIG_FILE}
 . ${WG_CLOUDVPN_SERVER_CONFIG_FILE}
 
-## source this host client config file
+## source the client's config file
 WG_CLOUDVPN_CLIENT_CONFIG_FILE=/etc/wireguard/config/${WG_CLOUDVPN_CLIENT_HOSTNAME}-client
+## get latest from USERDATA_CONFIG
 cp -f ${USERDATA_CONFIG}/${WG_CLOUDVPN_CLIENT_HOSTNAME}-client ${WG_CLOUDVPN_CLIENT_CONFIG_FILE}
 . ${WG_CLOUDVPN_CLIENT_CONFIG_FILE}
 
+## test for vars set by config files
+set +u
 ! test -z "${WG_CLOUDVPN_SERVER_LISTEN_PORT}"  || (echo "ERROR: WG_CLOUDVPN_SERVER_LISTEN_PORT  is not set" && exit 5)
 ! test -z "${WG_CLOUDVPN_SERVER_NETWORK_BASE}" || (echo "ERROR: WG_CLOUDVPN_SERVER_NETWORK_BASE is not set" && exit 5)
 ! test -z "${WG_CLOUDVPN_SERVER_NETWORK_MASK}" || (echo "ERROR: WG_CLOUDVPN_SERVER_NETWORK_MASK is not set" && exit 5)
 ! test -z "${WG_CLOUDVPN_SERVER_IP_END}"       || (echo "ERROR: WG_CLOUDVPN_SERVER_IP_END       is not set" && exit 5)
 ! test -z "${WG_CLOUDVPN_SERVER_CLIENT_LIST}"  || (echo "ERROR: WG_CLOUDVPN_SERVER_CLIENT_LIST  is not set" && exit 5)
+set -u
 
+## set vars for script
 WG_CLOUDVPN_SERVER_IP_ADDR=${WG_CLOUDVPN_SERVER_NETWORK_BASE}.${WG_CLOUDVPN_SERVER_IP_END}
 WG_CLOUDVPN_SERVER_IP_CIDR=${WG_CLOUDVPN_SERVER_IP_ADDR}/32
 WG_CLOUDVPN_SERVER_NETWORK_CIDR=${WG_CLOUDVPN_SERVER_NETWORK_BASE}.0/${WG_CLOUDVPN_SERVER_NETWORK_MASK}
@@ -68,6 +74,7 @@ cd /etc/wireguard/
 WG_POST_UPDOWN_TYPE=cloud
 WG_POST_UPDOWN_CONFIG_FILE=/etc/wireguard/config/wireguard-postupdown.config.${WG_POST_UPDOWN_TYPE}
 WG_POST_UPDOWN_CONFIG_SCRIPT=/etc/wireguard/config/wireguard-postupdown.sh
+## get latest from USERDATA_CONFIG
 cp ${USERDATA_CONFIG}/wireguard-postupdown.sh ${WG_POST_UPDOWN_CONFIG_SCRIPT}
 rm -f ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_SERVER_DEVICE_NAME=$WG_CLOUDVPN_SERVER_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
@@ -85,7 +92,7 @@ PostDown = ${WG_POST_UPDOWN_CONFIG_SCRIPT} ${WG_POST_UPDOWN_TYPE} down
 
 EOF
 
-## loop through setup each cloud client peer
+## loop through setup each cloud client peer (cloudvpn will only have one)
 for WG_CLOUDVPN_SERVER_CLIENT in ${WG_CLOUDVPN_SERVER_CLIENT_LIST}
 do
   ## source this host client config file
@@ -112,7 +119,7 @@ EOF
 
 done
 
-## bring up wireguard interface (except on the initial setup launch)
+## bring up wireguard interface (except on the initial VPS launch)
 set +u
-! test -z "${WG_SKIP_UP}" || wg-quick up ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
+! test -z "${WG_QUICKUP_SKIP}" || wg-quick up ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
 set -u

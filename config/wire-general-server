@@ -11,5 +11,8 @@ WG_CLOUDVPN_SERVER_NETWORK_BASE="192.168.110"
 WG_CLOUDVPN_SERVER_NETWORK_MASK="24"
 WG_CLOUDVPN_SERVER_IP_END="10"
 
+## server dnscrypt-proxy flag
+SETUP_DNSCRYPT_PROXY_BLOCKING="YES"
+
 ## client config file in config/<name>-client
 WG_CLOUDVPN_SERVER_CLIENT_LIST="wire-general"

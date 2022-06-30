@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eux
-# -x needed for seeing lines for RTNETLINK answers: File exists errors
+# -x needed for seeing error lines causing RTNETLINK answers: File exists errors
 
 ##
 ## wireguard-postupdown.sh ## run this script instead of wg-quick up wg0 ##
@@ -102,11 +102,12 @@ then
 			ufw route allow in on ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
 			ufw route allow in out ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
 		fi
-		ufw ${UFW_ACTION} status verbose
 		## setup files for homeip cron script
 		ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		rm -f /var/tmp/home_cidr_previous_file.txt
 		rm -f /var/tmp/home__ip__previous_file.txt
+		## list fw
+		ufw ${UFW_ACTION} status verbose
 	fi
 
 	##

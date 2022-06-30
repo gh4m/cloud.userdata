@@ -7,7 +7,7 @@ set -eu
 
 WG_CLOUDVPN_CLIENT_DEVICE_NAME=wg0
 
-read -p "Creating new wireguard keys for ${WG_CLOUDVPN_CLIENT_DEVICE_NAME}. Are you sure? " -n 1 -r
+read -p "Creating new wireguard public/private keys for ${WG_CLOUDVPN_CLIENT_DEVICE_NAME}. Are you sure? " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then

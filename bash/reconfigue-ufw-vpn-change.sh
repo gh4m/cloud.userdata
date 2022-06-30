@@ -1,8 +1,10 @@
 #!/bin/bash
 set -eux
 
-## note: this script not currently deployed
-## pending lambda security group coordination
+##-------------------------------------------##
+## NOTE: this script not currently deployed  ##
+## pending lambda security group coordination##
+##-------------------------------------------##
 
 ## setup/reconfig FW for vpn ssh access
 ## setup as cron to maintain VPN server access to host
