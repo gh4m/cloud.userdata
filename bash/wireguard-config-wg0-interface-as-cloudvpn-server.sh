@@ -53,6 +53,12 @@ set +u
 ! test -z "${WG_CLOUDVPN_SERVER_CLIENT_LIST}"  || (echo "ERROR: WG_CLOUDVPN_SERVER_CLIENT_LIST  is not set" && exit 5)
 set -u
 
+## bring down wireguard interface
+if [[ -f ${WG_CLOUDVPN_SERVER_DEVICE_CONFIG_FILE} ]]
+then
+  wg-quick down ${WG_CLOUDVPN_SERVER_DEVICE_NAME} || echo "${WG_CLOUDVPN_SERVER_DEVICE_NAME} is already down"
+fi
+
 ## set vars for script
 WG_CLOUDVPN_SERVER_IP_ADDR=${WG_CLOUDVPN_SERVER_NETWORK_BASE}.${WG_CLOUDVPN_SERVER_IP_END}
 WG_CLOUDVPN_SERVER_IP_CIDR=${WG_CLOUDVPN_SERVER_IP_ADDR}/32
@@ -62,12 +68,6 @@ WG_CLOUDVPN_SERVER_PRIVATE_KEY_FILE=/etc/wireguard/privatekey-${WG_CLOUDVPN_SERV
 ## check files
 test -f ${WG_CLOUDVPN_SERVER_PRIVATE_KEY_FILE} || (echo "ERROR: file ${WG_CLOUDVPN_SERVER_PRIVATE_KEY_FILE} does not exist" && exit 5)
 WG_CLOUDVPN_SERVER_PRIVATE_KEY=$(cat ${WG_CLOUDVPN_SERVER_PRIVATE_KEY_FILE})
-
-## bring down wireguard interface
-if [[ -f ${WG_CLOUDVPN_SERVER_DEVICE_CONFIG_FILE} ]]
-then
-  wg-quick down ${WG_CLOUDVPN_SERVER_DEVICE_NAME} || echo "${WG_CLOUDVPN_SERVER_DEVICE_NAME} is already down"
-fi
 
 cd /etc/wireguard/
 
