@@ -54,8 +54,6 @@ else
 	FIREWALLD_PORT_ACTION="--remove-port"
 fi
 
-MY_INTERNET_FACE_IP=$(ip route get 8.8.8.8 | head -1 | awk -F'src' '{print $2}' | awk '{print $1}')
-
 if [[ "${WG_POST_UPDOWN_TYPE}" == "cloud" ]]
 then
 
@@ -110,6 +108,8 @@ then
 	##
 	## iptables routing setup
 	##
+
+	MY_INTERNET_FACE_IP=$(ip ad show dev ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
 
 	## forward and route wg packets
 	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j SNAT --to-source ${MY_INTERNET_FACE_IP}
