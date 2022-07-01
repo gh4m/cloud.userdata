@@ -97,12 +97,8 @@ then
 			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
 		fi
 
-		if [[ "${WG_POST_UPDOWN_ACTION}" == "down" ]]
-		then
-			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
-		fi
-
 		## setup files for homeip cron script
+		ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		rm -f /var/tmp/home_cidr_previous_file.txt
 		rm -f /var/tmp/home__ip__previous_file.txt
 
