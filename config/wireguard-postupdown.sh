@@ -3,7 +3,7 @@ set -eux
 # -x needed for seeing error lines causing RTNETLINK answers: File exists errors
 
 ##
-## wireguard-postupdown.sh ## run this script instead of wg-quick up wg0 ##
+## wireguard-postupdown.sh ## run this script instead of wg-quick up ##
 ##
 
 WG_POST_UPDOWN_ERR_MSG="two arguments required. 1st must be [cloud]. 2nd must be [up|down]"
