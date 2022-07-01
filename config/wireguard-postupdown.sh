@@ -46,17 +46,15 @@ test -f ${WG_POST_UPDOWN_CONFIG_FILE} || (echo "ERROR: file ${WG_POST_UPDOWN_CON
 if [[ "${WG_POST_UPDOWN_ACTION}" == "up" ]]
 then
 	IPTABLE_ACTION_FLAG="-A"
-	UFW_ACTION=""
 	FIREWALLD_RULE_ACTION="--add-rule"
 	FIREWALLD_PORT_ACTION="--add-port"
 else
 	IPTABLE_ACTION_FLAG="-D"
-	UFW_ACTION="delete"
 	FIREWALLD_RULE_ACTION="--remove-rule"
 	FIREWALLD_PORT_ACTION="--remove-port"
 fi
 
-MY_PUBLIC_IP=$(curl -s ifconfig.me 2> /dev/null || curl -s ipinfo.io/ip 2> /dev/null)
+MY_INTERNET_FACE_IP=$(ip route get 8.8.8.8 | head -1 | awk -F'src' '{print $2}' | awk '{print $1}')
 
 if [[ "${WG_POST_UPDOWN_TYPE}" == "cloud" ]]
 then
@@ -81,33 +79,38 @@ then
 
 	if [[ "${FW_IS_UWF}" == "true" ]]
 	then
-		ufw ${UFW_ACTION} --force reset
-		ufw ${UFW_ACTION} --force enable
-		ufw ${UFW_ACTION} logging low
-		ufw ${UFW_ACTION} default allow routed
-		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
-		ufw ${UFW_ACTION} allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
-		ufw ${UFW_ACTION} allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
-		ufw ${UFW_ACTION} allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
-		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
-		ufw ${UFW_ACTION} allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
-		ufw ${UFW_ACTION} deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 53 proto any
-		ufw ${UFW_ACTION} deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 853 proto any
-		ufw ${UFW_ACTION} deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
+
+		ufw --force reset
+		ufw --force enable
+		ufw logging low
+
+		if [[ "${WG_POST_UPDOWN_ACTION}" == "up" ]]
+		then
+			ufw default allow routed
+			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
+			ufw allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
+			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
+			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
+			ufw allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
+			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 53 proto any
+			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 853 proto any
+			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
+		fi
+
 		if [[ "${WG_POST_UPDOWN_ACTION}" == "down" ]]
 		then
-			ufw route deny in on ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
-			ufw route deny in out ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
-		else
-			ufw route allow in on ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
-			ufw route allow in out ${WG_CLOUDVPN_SERVER_DEVICE_NAME}
+			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		fi
+
 		## setup files for homeip cron script
-		ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 		rm -f /var/tmp/home_cidr_previous_file.txt
 		rm -f /var/tmp/home__ip__previous_file.txt
+
 		## list fw
-		ufw ${UFW_ACTION} status verbose
+		ufw status verbose
+
 	fi
 
 	##
@@ -115,9 +118,6 @@ then
 	##
 
 	## forward and route wg packets
-	# iptables ${IPTABLE_ACTION_FLAG} FORWARD -i ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
-	# iptables ${IPTABLE_ACTION_FLAG} FORWARD -o ${WG_CLOUDVPN_SERVER_DEVICE_NAME} -j ACCEPT
-	# iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j MASQUERADE
-	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j SNAT --to-source ${MY_PUBLIC_IP}
+	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j SNAT --to-source ${MY_INTERNET_FACE_IP}
 
 fi
