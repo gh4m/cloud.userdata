@@ -3,7 +3,7 @@ set -eux
 # -x needed for seeing error lines causing RTNETLINK answers: File exists errors
 
 ##
-## wireguard-postupdown.sh ## run this script instead of wg-quick up ##
+## wireguard-postupdown.sh ## run this script instead of wg-quick up wg0 ##
 ##
 
 WG_POST_UPDOWN_ERR_MSG="two arguments required. 1st must be [cloud]. 2nd must be [up|down]"
@@ -63,7 +63,6 @@ then
 	set +u
 	! test -z "${WG_CLOUDVPN_SERVER_NETWORK_CIDR}" || (echo "ERROR: WG_CLOUDVPN_SERVER_NETWORK_CIDR is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_SERVER_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_SERVER_LISTEN_PORT is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_SERVER_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_SERVER_DEVICE_NAME is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_INTERNET_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_INTERNET_DEVICE_NAME is not set" && exit 5)
 	set -u
 
@@ -90,7 +89,6 @@ then
 			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 			ufw allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
 			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
-			ufw allow proto tcp from 0.0.0.0/0 to any port ssh
 			ufw allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
 			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
 			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
