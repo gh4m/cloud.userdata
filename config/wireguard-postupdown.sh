@@ -61,8 +61,8 @@ then
 	set +u
 	! test -z "${WG_CLOUDVPN_WGS1_NET_CIDR}"    || (echo "ERROR: WG_CLOUDVPN_WGS1_NET_CIDR    is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_WGS1_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_WGS1_LISTEN_PORT is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_WGS1_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_WGS1_DEVICE_NAME is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_WGS1_IP_ADDR}"     || (echo "ERROR: WG_CLOUDVPN_WGS1_IP_ADDR     is not set" && exit 5)
+	# ! test -z "${WG_CLOUDVPN_WGS1_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_WGS1_DEVICE_NAME is not set" && exit 5)
+	# ! test -z "${WG_CLOUDVPN_WGS1_IP_ADDR}"     || (echo "ERROR: WG_CLOUDVPN_WGS1_IP_ADDR     is not set" && exit 5)
 	! test -z "${WG_CLOUDVPN_ETH_DEVICE_NAME}"  || (echo "ERROR: WG_CLOUDVPN_ETH_DEVICE_NAME  is not set" && exit 5)
 	set -u
 
@@ -113,9 +113,9 @@ then
 	## iptables routing setup
 	##
 
-	# WG_CLOUDVPN_ETH_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
-	# iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH_IP_ADDR}
+	WG_CLOUDVPN_ETH_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
+	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH_IP_ADDR}
 
-	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_WGS1_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_WGS1_IP_ADDR}
+	# iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_WGS1_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_WGS1_IP_ADDR}
 
 fi
