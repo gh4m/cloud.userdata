@@ -15,7 +15,7 @@ WG_LOCALVPN_WGC0_HOSTNAME=${WG_CLOUDVPN_WGS1_HOSTNAME}
 
 WG_CLOUDVPN_WGS1_DEVICE_NAME=wgs1
 WG_CLOUDVPN_WGS1_CONFIG_FILE=/etc/wireguard/${WG_CLOUDVPN_WGS1_DEVICE_NAME}.conf
-WG_CLOUDVPN_ETH_DEVICE_NAME=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+WG_CLOUDVPN_ETH_DEVICE_NAME=$(ip route | grep -v " wg[a-z][0-9]" | grep ^default | awk '{print $5}')
 
 read -p "Configuring ${WG_CLOUDVPN_WGS1_CONFIG_FILE}. Will overwrite if exists. Are you sure? " -n 1 -r
 echo    # (optional) move to a new line
