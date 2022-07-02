@@ -3,7 +3,7 @@ set -eux
 # -x needed for seeing error lines causing RTNETLINK answers: File exists errors
 
 ##
-## wireguard-postupdown.sh ## run this script instead of wg-quick up wg0 ##
+## wireguard-postupdown.sh ## run this script instead of wg-quick up ##
 ##
 
 WG_POST_UPDOWN_ERR_MSG="two arguments required. 1st must be [cloud]. 2nd must be [up|down]"
@@ -59,9 +59,9 @@ then
 
 	## check for needed config vars
 	set +u
-	! test -z "${WG_CLOUDVPN_SERVER_NETWORK_CIDR}" || (echo "ERROR: WG_CLOUDVPN_SERVER_NETWORK_CIDR is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_SERVER_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_SERVER_LISTEN_PORT is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_INTERNET_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_INTERNET_DEVICE_NAME is not set" && exit 5)
+	! test -z "${WG_CLOUDVPN_WGS1_NET_CIDR}"    || (echo "ERROR: WG_CLOUDVPN_WGS1_NET_CIDR    is not set" && exit 5)
+	! test -z "${WG_CLOUDVPN_WGS1_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_WGS1_LISTEN_PORT is not set" && exit 5)
+	! test -z "${WG_CLOUDVPN_ETH_DEVICE_NAME}"  || (echo "ERROR: WG_CLOUDVPN_ETH_DEVICE_NAME  is not set" && exit 5)
 	set -u
 
 	##
@@ -84,15 +84,17 @@ then
 		if [[ "${WG_POST_UPDOWN_ACTION}" == "up" ]]
 		then
 			ufw default allow routed
-			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
-			ufw allow proto udp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port domain
-			ufw allow proto tcp from ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} to any port ssh
-			ufw allow ${WG_CLOUDVPN_SERVER_LISTEN_PORT}/udp
-			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
-			ufw allow out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
-			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 53 proto any
-			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 853 proto any
-			ufw deny out on ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} to any port 5353 proto any
+			## inbound rules
+			ufw allow proto tcp from ${WG_CLOUDVPN_WGS1_NET_CIDR} to any port domain
+			ufw allow proto udp from ${WG_CLOUDVPN_WGS1_NET_CIDR} to any port domain
+			ufw allow proto tcp from ${WG_CLOUDVPN_WGS1_NET_CIDR} to any port ssh
+			ufw allow ${WG_CLOUDVPN_WGS1_LISTEN_PORT}/udp
+			## outbound rules
+			ufw allow out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw allow out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 53 proto any
+			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 853 proto any
+			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 5353 proto any
 		fi
 
 		## setup files for homeip cron script
@@ -109,9 +111,7 @@ then
 	## iptables routing setup
 	##
 
-	MY_INTERNET_FACE_IP=$(ip ad show dev ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
-
-	## forward and route wg packets
-	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_SERVER_NETWORK_CIDR} -o ${WG_CLOUDVPN_INTERNET_DEVICE_NAME} -j SNAT --to-source ${MY_INTERNET_FACE_IP}
+	WG_CLOUDVPN_ETH_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
+	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH_IP_ADDR}
 
 fi

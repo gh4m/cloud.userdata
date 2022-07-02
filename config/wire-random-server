@@ -3,16 +3,16 @@
 ## wire-random-server
 ##
 
-WG_CLOUDVPN_SERVER_LISTEN_PORT="51811"
+WG_CLOUDVPN_WGS1_LISTEN_PORT="51811"
 
 ## avoid using 192.168.122 NETWORK_BASE as it is used by virbr0
 
-WG_CLOUDVPN_SERVER_NETWORK_BASE="192.168.120"
-WG_CLOUDVPN_SERVER_NETWORK_MASK="24"
-WG_CLOUDVPN_SERVER_IP_END="10"
+WG_CLOUDVPN_WGS1_NET_BASE="192.168.120"
+WG_CLOUDVPN_WGS1_NET_MASK="24"
+WG_CLOUDVPN_WGS1_IP_END="10"
 
-## server dnscrypt-proxy flag
-SETUP_DNSCRYPT_PROXY_BLOCKING="YES"
+## server dnscrypt-proxy blocking flag
+WG_CLOUDVPN_WGS1_DNSCRYPT_PROXY_BLOCKING="YES"
 
-## client config file in config/<name>-client
-WG_CLOUDVPN_SERVER_CLIENT_LIST="wire-random"
+## peer variable file in config/<name>-client
+WG_CLOUDVPN_WGS1_CLIENT_LIST="wire-random"

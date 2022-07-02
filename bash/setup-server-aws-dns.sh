@@ -7,12 +7,12 @@ set -eux
 
 ## need to pass args as this script is setup as cron to update
 ## AWS DNS for this cloudvpn server on stop/start public IP change
-WG_CLOUDVPN_SERVER_HOSTNAME=$1
-WG_CLOUDVPN_SERVER_DOMAIN_NAME=$2
-WG_CLOUDVPN_SERVER_FQDN=${WG_CLOUDVPN_SERVER_HOSTNAME}.${WG_CLOUDVPN_SERVER_DOMAIN_NAME}
+WG_CLOUDVPN_WGS1_HOSTNAME=$1
+WG_CLOUDVPN_WGS1_DOMAIN_NAME=$2
+WG_CLOUDVPN_WGS1_FQDN=${WG_CLOUDVPN_WGS1_HOSTNAME}.${WG_CLOUDVPN_WGS1_DOMAIN_NAME}
 AWS_ROUTE53_ZONEID_PRIVATE=$3
 AWS_ROUTE53_ZONEID_PUBLIC=$4
-WG_CLOUDVPN_INTERNET_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+WG_CLOUDVPN_PUBLIC_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 WG_CLOUDVPN_PRIVATE_IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 ## in /tmp so file is removed on reboot or stop/start
@@ -28,7 +28,7 @@ cat << EOF > $route53jsonprivate
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${WG_CLOUDVPN_SERVER_FQDN}",
+        "Name": "${WG_CLOUDVPN_WGS1_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [
@@ -51,12 +51,12 @@ cat << EOF > $route53jsonpublic
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "${WG_CLOUDVPN_SERVER_FQDN}",
+        "Name": "${WG_CLOUDVPN_WGS1_FQDN}",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [
 			{
-			  "Value": "${WG_CLOUDVPN_INTERNET_IP_ADDR}"
+			  "Value": "${WG_CLOUDVPN_PUBLIC_IP_ADDR}"
 			}
         ]
       }
@@ -67,6 +67,6 @@ EOF
 aws route53 change-resource-record-sets --hosted-zone-id $AWS_ROUTE53_ZONEID_PUBLIC --change-batch file://$route53jsonpublic
 
 ## set file so will not rerun unless server rebooted or stopped/started
-echo "${WG_CLOUDVPN_INTERNET_IP_ADDR}" > ${AWS_DNS_PUBLIC_IP_FILE}
+echo "${WG_CLOUDVPN_PUBLIC_IP_ADDR}" > ${AWS_DNS_PUBLIC_IP_FILE}
 
 fi
