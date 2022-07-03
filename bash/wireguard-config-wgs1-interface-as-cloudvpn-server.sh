@@ -5,12 +5,12 @@ set -eu
 ## wireguard-config-wgs1-interface-as-cloudvpn-server.sh
 ##
 
-set +u
-! test -z "${WG_CLOUDVPN_WGS1_HOSTNAME}" || WG_CLOUDVPN_WGS1_HOSTNAME=$(hostname | awk -F. '{print $1}')
-set -u
 ## LOCALVPN WGC0 hostname (the vpn server on local network) 
 ## is same as the hostname for the CLOUDVPN WGS1 (on VPS cloud provider)
 ## the DOMAIN_NAME differs local vs cloud
+set +u
+! test -z "${WG_CLOUDVPN_WGS1_HOSTNAME}" || WG_CLOUDVPN_WGS1_HOSTNAME=$(hostname | awk -F. '{print $1}')
+set -u
 WG_LOCALVPN_WGC0_HOSTNAME=${WG_CLOUDVPN_WGS1_HOSTNAME}
 
 WG_CLOUDVPN_WGS1_DEVICE_NAME=wgs1
