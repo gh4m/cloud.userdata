@@ -63,7 +63,7 @@ then
 	! test -z "${WG_CLOUDVPN_WGS1_LISTEN_PORT}" || (echo "ERROR: WG_CLOUDVPN_WGS1_LISTEN_PORT is not set" && exit 5)
 	# ! test -z "${WG_CLOUDVPN_WGS1_DEVICE_NAME}" || (echo "ERROR: WG_CLOUDVPN_WGS1_DEVICE_NAME is not set" && exit 5)
 	# ! test -z "${WG_CLOUDVPN_WGS1_IP_ADDR}"     || (echo "ERROR: WG_CLOUDVPN_WGS1_IP_ADDR     is not set" && exit 5)
-	! test -z "${WG_CLOUDVPN_ETH_DEVICE_NAME}"  || (echo "ERROR: WG_CLOUDVPN_ETH_DEVICE_NAME  is not set" && exit 5)
+	! test -z "${WG_CLOUDVPN_ETH0_DEVICE_NAME}"  || (echo "ERROR: WG_CLOUDVPN_ETH0_DEVICE_NAME  is not set" && exit 5)
 	set -u
 
 	##
@@ -92,11 +92,11 @@ then
 			ufw allow proto tcp from ${WG_CLOUDVPN_WGS1_NET_CIDR} to any port ssh
 			ufw allow ${WG_CLOUDVPN_WGS1_LISTEN_PORT}/udp
 			## outbound rules
-			ufw allow out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
-			ufw allow out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
-			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 53 proto any
-			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 853 proto any
-			ufw deny out on ${WG_CLOUDVPN_ETH_DEVICE_NAME} to any port 5353 proto any
+			ufw allow out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to 8.8.8.8 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw allow out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to 1.1.1.1 port 53 proto any ## dnscrypt bootstrap_resolver
+			ufw deny out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any port 53 proto any
+			ufw deny out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any port 853 proto any
+			ufw deny out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any port 5353 proto any
 		fi
 
 		## setup files for homeip cron script
@@ -113,8 +113,8 @@ then
 	## iptables routing setup
 	##
 
-	WG_CLOUDVPN_ETH_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
-	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH_IP_ADDR}
+	WG_CLOUDVPN_ETH0_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH0_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
+	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH0_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH0_IP_ADDR}
 
 	# iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_WGS1_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_WGS1_IP_ADDR}
 

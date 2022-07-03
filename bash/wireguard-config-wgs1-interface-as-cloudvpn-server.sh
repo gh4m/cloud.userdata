@@ -8,14 +8,14 @@ set -eu
 set +u
 ! test -z "${WG_CLOUDVPN_WGS1_HOSTNAME}" || WG_CLOUDVPN_WGS1_HOSTNAME=$(hostname | awk -F. '{print $1}')
 set -u
-## local VPN client hostname (the vpn server on local network) 
-## is same as the hostname for the cloud VPN server (on VPS provider)
-## domain name differs local vs cloud
+## LOCALVPN WGC0 hostname (the vpn server on local network) 
+## is same as the hostname for the CLOUDVPN WGS1 (on VPS cloud provider)
+## the DOMAIN_NAME differs local vs cloud
 WG_LOCALVPN_WGC0_HOSTNAME=${WG_CLOUDVPN_WGS1_HOSTNAME}
 
 WG_CLOUDVPN_WGS1_DEVICE_NAME=wgs1
 WG_CLOUDVPN_WGS1_CONFIG_FILE=/etc/wireguard/${WG_CLOUDVPN_WGS1_DEVICE_NAME}.conf
-WG_CLOUDVPN_ETH_DEVICE_NAME=$(ip route | grep -v " wg[a-z][0-9]" | grep ^default | awk '{print $5}')
+WG_CLOUDVPN_ETH0_DEVICE_NAME=$(ip route | grep -v " wg[a-z][0-9]" | grep ^default | awk '{print $5}')
 
 read -p "Configuring ${WG_CLOUDVPN_WGS1_CONFIG_FILE}. Will overwrite if exists. Are you sure? " -n 1 -r
 echo    # (optional) move to a new line
@@ -80,9 +80,7 @@ cp ${USERDATA_CONFIG}/wireguard-postupdown.sh ${WG_POST_UPDOWN_CONFIG_SCRIPT}
 rm -f ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_WGS1_NET_CIDR=$WG_CLOUDVPN_WGS1_NET_CIDR" >> ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_WGS1_LISTEN_PORT=$WG_CLOUDVPN_WGS1_LISTEN_PORT" >> ${WG_POST_UPDOWN_CONFIG_FILE}
-#echo "WG_CLOUDVPN_WGS1_DEVICE_NAME=$WG_CLOUDVPN_WGS1_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
-#echo "WG_CLOUDVPN_WGS1_IP_ADDR=$WG_CLOUDVPN_WGS1_IP_ADDR" >> ${WG_POST_UPDOWN_CONFIG_FILE}
-echo "WG_CLOUDVPN_ETH_DEVICE_NAME=$WG_CLOUDVPN_ETH_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
+echo "WG_CLOUDVPN_ETH0_DEVICE_NAME=$WG_CLOUDVPN_ETH0_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
 
 cat << EOF > ${WG_CLOUDVPN_WGS1_CONFIG_FILE}
 [Interface]
@@ -94,7 +92,7 @@ PostDown = ${WG_POST_UPDOWN_CONFIG_SCRIPT} ${WG_POST_UPDOWN_TYPE} down
 
 EOF
 
-## loop through setup each cloud client peer (cloudvpn will only have one)
+## loop through setup each cloud client peer (CLOUDVPN will only have one)
 for WG_CLOUDVPN_WGS1_CLIENT in ${WG_CLOUDVPN_WGS1_CLIENT_LIST}
 do
   ## source this host client config file
