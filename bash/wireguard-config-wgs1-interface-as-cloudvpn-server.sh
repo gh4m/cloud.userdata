@@ -10,7 +10,6 @@ set -eu
 ####----------------------------------------------------------------
 
 WG_HOMEFIOS_ETH0_NET_CIDR="10.0.0.0/8"
-#WG_HOMEFIOS_ETH0_GW_IP_ADDR=10.30.0.10
 
 ####----------------------------------------------------------------
 ####----------------------------------------------------------------
@@ -120,6 +119,7 @@ do
     umask 077 && wg genpsk > ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE}
   fi
   WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY=$(cat ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE})
+  ## for remote WG VPN access into home network, add WG_HOMEFIOS_ETH0_NET_CIDR for routing
   if [[ "$WG_CLOUDVPN_WGS1_CLIENT" == "$WG_LOCALVPN_WGC0_HOSTNAME" ]]
   then
     ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET=", ${WG_HOMEFIOS_ETH0_NET_CIDR}"
