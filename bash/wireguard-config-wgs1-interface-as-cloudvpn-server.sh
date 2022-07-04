@@ -5,6 +5,17 @@ set -eu
 ## wireguard-config-wgs1-interface-as-cloudvpn-server.sh
 ##
 
+####----------------------------------------------------------------
+####----------------------------------------------------------------
+####----------------------------------------------------------------
+
+WG_HOMEFIOS_ETH0_NET_CIDR="10.0.0.0/8"
+#WG_HOMEFIOS_ETH0_GW_IP_ADDR=10.30.0.10
+
+####----------------------------------------------------------------
+####----------------------------------------------------------------
+####----------------------------------------------------------------
+
 ## LOCALVPN WGC0 hostname (the vpn server on local network) 
 ## is same as the hostname for the CLOUDVPN WGS1 (on VPS cloud provider)
 ## the DOMAIN_NAME differs local vs cloud
@@ -109,11 +120,17 @@ do
     umask 077 && wg genpsk > ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE}
   fi
   WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY=$(cat ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE})
+  if [[ "$WG_CLOUDVPN_WGS1_CLIENT" == "$WG_LOCALVPN_WGC0_HOSTNAME" ]]
+  then
+    ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET=", ${WG_HOMEFIOS_ETH0_NET_CIDR}"
+  else
+    ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET=""
+  fi
 cat << EOF >> ${WG_CLOUDVPN_WGS1_CONFIG_FILE}
 [Peer]
 PublicKey = ${WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY}
 PresharedKey = ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY}
-AllowedIPs = ${WG_CLOUDVPN_WGS1_CLIENT_IP_CIDR}
+AllowedIPs = ${WG_CLOUDVPN_WGS1_CLIENT_IP_CIDR}${ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET}
 
 EOF
 
