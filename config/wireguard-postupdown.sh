@@ -113,6 +113,7 @@ then
 	##
 
 	WG_CLOUDVPN_ETH0_IP_ADDR=$(ip ad show dev ${WG_CLOUDVPN_ETH0_DEVICE_NAME} | grep "inet " | awk '{print $2}' | awk -F/ '{print $1}')
+	
 	## packet in (source) from WG_CLOUDVPN_WGS1_NET_CIDR out through WG_CLOUDVPN_ETH0_DEVICE_NAME normal network to anywhere (no -d argument)
 	iptables -t nat ${IPTABLE_ACTION_FLAG} POSTROUTING -s ${WG_CLOUDVPN_WGS1_NET_CIDR} -o ${WG_CLOUDVPN_ETH0_DEVICE_NAME} -j SNAT --to-source ${WG_CLOUDVPN_ETH0_IP_ADDR}
 	
