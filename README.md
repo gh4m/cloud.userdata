@@ -1,6 +1,6 @@
-#  cloud.userdata.scripts
+#  VPS cloud.userdata.scripts
 
-Multi-node WireGuard VPN network exiting on an VPS provider VM. No commercial VPN provider is used.
+# Multi-node WireGuard VPN network exiting on an VPS provider VM. No commercial VPN provider is used.
 
 The scripts in this repo are to setup a the wireguard VPN server in the VPS Provider Network section of the diagram below.
 
