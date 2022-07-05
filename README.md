@@ -2,7 +2,7 @@
 
 [note this repo is "in-development", expect mistakes, feedback welcome. I am still exporing wireguard and how it works]
 
-The scripts in this repo are to setup the wireguard VPN server shown in the VPS Provider Network section of the diagram below. This is currently VPN network I have setup as a personal project to expplore alternatives to using a commercial VPN provider.
+The scripts in this repo are to setup the wireguard VPN server shown in the VPS Provider Network section of the diagram below. This is currently VPN network I have setup as a personal project to explore alternatives to using a commercial VPN provider.
 
 The script in userdata/ folder is used in the VPS launch (currently only an AWS userdata launch script exists). This git repo is cloned during launch and the scripts in the bash/ folder are executed. The config/ folder provides client and server host network settings for each instance of the multi-node VPN network that is to be setup. The scripts in this repo are intended to allow the VPS provider hosting the wire-general VPN server to be swapped out easily, with runtime scripts available to rebuild the wg.conf on the local VPN server for the new cloud VPN server's public and preshared keys.
 
