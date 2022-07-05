@@ -10,7 +10,7 @@ Clients on the local home network connect to the local VPN server, called wire-g
 
 The setup is intended to support multiple independent wireguard VPN tunnels (multiple instances of the wiregaurd network in the diagram below) in the same home ISP network (each instance with local and cloud server with same hostname, but different domain name). With multiple instances, there can be one set of clients using a wireguard VPN network exiting AWS in a US city and another set of clients using a different wireguard VPN network exiting AWS in a city in Europe for example.
 
-The phone uses wireguard VPN to both access the internet and to access local reasources on the local home network, such as nextcloud.
+The phone uses wireguard VPN to both access the internet and to access local resources on the local home network, such as nextcloud.
 
 ![Alt text](docs/wireguard-network-diagram.drawio.png?raw=true "Multi-node VPN Newtrk Diagram")
 
