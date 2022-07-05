@@ -1,6 +1,6 @@
 # Multi-node WireGuard VPN network exiting from a VPS provider VM. No commercial VPN provider is used.
 
-[note this repo is "in-development", expect mistakes, feedback welcome]
+[note this repo is "in-development", expect mistakes, feedback welcome. I am still exporing wireguard and how it works]
 
 The scripts in this repo are to setup the wireguard VPN server shown in the VPS Provider Network section of the diagram below. This is currently VPN network I have setup as a personal project to expplore alternatives to using a commercial VPN provider.
 
