@@ -3,7 +3,7 @@
 ## wire-random-server
 ##
 
-WG_CLOUDVPN_WGS1_LISTEN_PORT="51811"
+WG_CLOUDVPN_WGS1_LISTEN_PORT="51893"
 
 ## avoid using 192.168.122 NETWORK_BASE as it is used by virbr0
 
