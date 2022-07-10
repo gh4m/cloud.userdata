@@ -95,6 +95,7 @@ then
 			ufw deny  out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any     port 53   proto any
 			ufw deny  out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any     port 853  proto any
 			ufw deny  out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any     port 5353 proto any
+			ufw deny  out on ${WG_CLOUDVPN_ETH0_DEVICE_NAME} to any     port 5355 proto any
 		fi
 
 		## allow in ssh regardless of wg up or down
