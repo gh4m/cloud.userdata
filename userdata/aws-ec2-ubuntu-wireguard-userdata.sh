@@ -2,7 +2,7 @@
 set -eux
 
 ##
-## AWS EC2 user data script setup wireguard server (ubuntu 22.04)
+## AWS EC2 user data script to setup wireguard cloudvpn server (ubuntu 22.04)
 ##
 
 ####----------------------------------------------------------------
@@ -10,14 +10,14 @@ set -eux
 ####----------------------------------------------------------------
 
 
-## select cloudvpn server name to configure
-## reflects independent cloudvpn IP and corresponding localVPN network
+## select cloudvpn server hostname to configure
+## localvpn server hostname will be same (with different domain name)
 WG_CLOUDVPN_WGS1_HOSTNAME=
 
-## FQDN to use for locating home isp ip address
-WG_HOMEFIOS_ETH0_FQDN=
+## FQDN to use for finding home isp ip address
+WG_HOME_LAN_PUBL_FQDN=
 
-## AWS ACCT INFO
+## AWS ACCT SPECIFIC INFO (these vars only used in code below)
 AWS_ACCT_ONE_ID=
 AWS_ACCT_TWO_ID=
 AWS_ACCT_ONE_DOMAIN_NAME=
@@ -80,10 +80,10 @@ SCRIPT_CRON_FIREWALL_HOMEFIOS_CHANGE_PATH=${USERDATA_BASH}/${SCRIPT_CRON_FIREWAL
 ## instal aws cli
 . ${SCRIPT_SETUP_AWSCLI_PATH}
 
-## setup aws dns records (script needs args as will be setup as cron)
+## setup aws dns records (script needs args as it will be setup as cron)
 . ${SCRIPT_SETUP_DNS_PATH} ${WG_CLOUDVPN_WGS1_HOSTNAME} ${WG_CLOUDVPN_WGS1_DOMAIN_NAME} ${AWS_ROUTE53_ZONEID_PRIVATE} ${AWS_ROUTE53_ZONEID_PUBLIC}
 
-## wireguard server setup (wireguard config/key scripts designed to be run manually)
+## wireguard server setup (wireguard config & key scripts designed to be run manually)
 $APT_GET_CMD install wireguard
 . ${SCRIPT_SETUP_CLOUDVPN_WGS1_KEYS_PATH} <<<"y" ## script can be manually run
 WG_QUICKUP_SKIP=YES . ${SCRIPT_SETUP_CLOUDVPN_WGS1_CONFIG_PATH} <<<"y" ## script can be manually run
@@ -106,7 +106,7 @@ cp ${SCRIPT_SETUP_CLOUDVPN_WGS1_CONFIG_PATH} /etc/wireguard/ && chmod +x /etc/wi
 ## -- add to crontab just before reboot as not run during initial launch -- ##
 set +e
 (crontab -l 2>/dev/null; echo "*/4 * * * * ${SCRIPT_SETUP_DNS_PATH} ${WG_CLOUDVPN_WGS1_HOSTNAME} ${WG_CLOUDVPN_WGS1_DOMAIN_NAME} ${AWS_ROUTE53_ZONEID_PRIVATE} ${AWS_ROUTE53_ZONEID_PUBLIC}") | crontab -
-(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SCRIPT_CRON_FIREWALL_HOMEFIOS_CHANGE_PATH} ${WG_HOMEFIOS_ETH0_FQDN}") | crontab -
+(crontab -l 2>/dev/null; echo "3-59/4 * * * * ${SCRIPT_CRON_FIREWALL_HOMEFIOS_CHANGE_PATH} ${WG_HOME_LAN_PUBL_FQDN}") | crontab -
 set -e
 
 shutdown -r now

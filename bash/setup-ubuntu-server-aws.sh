@@ -26,8 +26,8 @@ sed -i "/ListenAddress 0.0.0.0/c\ListenAddress 0.0.0.0" /etc/ssh/sshd_config
 hostnamectl set-hostname ${WG_CLOUDVPN_WGS1_FQDN}
 echo "${WG_CLOUDVPN_PRIV_IP_ADDR} ${WG_CLOUDVPN_WGS1_FQDN}" >> /etc/hosts
 ## home host setup
-WG_HOMEFIOS_PUBL_IP_ADDR=$(dig +short ${WG_HOMEFIOS_ETH0_FQDN} | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
-echo "${WG_HOMEFIOS_PUBL_IP_ADDR} ${WG_HOMEFIOS_ETH0_FQDN}" >> /etc/hosts
+WG_HOME_LAN_PUBL_IP_ADDR=$(dig +short ${WG_HOME_LAN_PUBL_FQDN} | tail -n1 | grep -E -o "^([0-9]{1,3}[\.]){3}[0-9]{1,3}$")
+echo "${WG_HOME_LAN_PUBL_IP_ADDR} ${WG_HOME_LAN_PUBL_FQDN}" >> /etc/hosts
 
 timedatectl set-timezone America/New_York
 

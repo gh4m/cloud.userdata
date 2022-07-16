@@ -9,18 +9,18 @@ set -eu
 ####----------------------------------------------------------------
 ####----------------------------------------------------------------
 
-WG_HOMEFIOS_ETH0_NET_CIDR="10.0.0.0/8"
+WG_HOME_LAN_PRIV_NET_CIDR="10.0.0.0/8"
 
 ####----------------------------------------------------------------
 ####----------------------------------------------------------------
 ####----------------------------------------------------------------
 
-## LOCALVPN WGC0 hostname (the vpn server on local network) 
-## is same as the hostname for the CLOUDVPN WGS1 (on VPS cloud provider)
-## the DOMAIN_NAME differs local vs cloud
+## CLOUDVPN WGS1 hostname (cloud VPS)
 set +u
 ! test -z "${WG_CLOUDVPN_WGS1_HOSTNAME}" || WG_CLOUDVPN_WGS1_HOSTNAME=$(hostname | awk -F. '{print $1}')
 set -u
+## LOCALVPN WGC0 hostname (home network)
+## LOCALVPN (home network) same as CLOUDVPN WGS1 (on VPS cloud provider), the DOMAIN_NAME differs
 WG_LOCALVPN_WGC0_HOSTNAME=${WG_CLOUDVPN_WGS1_HOSTNAME}
 
 WG_CLOUDVPN_WGS1_DEVICE_NAME=wgs1
@@ -88,7 +88,7 @@ WG_POST_UPDOWN_CONFIG_SCRIPT=/etc/wireguard/config/wireguard-postupdown.sh
 ## get latest from USERDATA_CONFIG
 cp ${USERDATA_CONFIG}/wireguard-postupdown.sh ${WG_POST_UPDOWN_CONFIG_SCRIPT}
 rm -f ${WG_POST_UPDOWN_CONFIG_FILE}
-echo "WG_CLOUDVPN_WGS1_NET_CIDR=$WG_CLOUDVPN_WGS1_NET_CIDR" >> ${WG_POST_UPDOWN_CONFIG_FILE}
+echo "WG_CLOUDVPN_WGS1_NET_CIDR=$WG_CLOUDVPN_WGS1_NET_CIDR"       >> ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_WGS1_LISTEN_PORT=$WG_CLOUDVPN_WGS1_LISTEN_PORT" >> ${WG_POST_UPDOWN_CONFIG_FILE}
 echo "WG_CLOUDVPN_ETH0_DEVICE_NAME=$WG_CLOUDVPN_ETH0_DEVICE_NAME" >> ${WG_POST_UPDOWN_CONFIG_FILE}
 
@@ -102,7 +102,7 @@ PostDown = ${WG_POST_UPDOWN_CONFIG_SCRIPT} ${WG_POST_UPDOWN_TYPE} down
 
 EOF
 
-## loop through setup each cloud client peer (CLOUDVPN will only have one)
+## loop through setup each cloudvpn server client peer (CLOUDVPN will minimum one, LOCALVPN, plus mobile devices)
 for WG_CLOUDVPN_WGS1_CLIENT in ${WG_CLOUDVPN_WGS1_CLIENT_LIST}
 do
   ## source this host client config file
@@ -112,25 +112,25 @@ do
   WG_CLOUDVPN_WGS1_CLIENT_IP_ADDR=${WG_CLOUDVPN_WGS1_NET_BASE}.${WG_CLOUDVPN_WGS1_CLIENT_IP_END}
   WG_CLOUDVPN_WGS1_CLIENT_IP_CIDR=${WG_CLOUDVPN_WGS1_CLIENT_IP_ADDR}/32
   WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY=${WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY}
-  WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE=/etc/wireguard/sharekey-cloudvpn-${WG_CLOUDVPN_WGS1_CLIENT_IP_ADDR}
-  ## if preshare key not exist, create one
+  WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE=/etc/wireguard/sharekey-${WG_POST_UPDOWN_TYPE}vpn-${WG_CLOUDVPN_WGS1_CLIENT_IP_ADDR}
+  ## if preshare key does not exist, create one
   if [[ ! -f ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE} ]]
   then
     umask 077 && wg genpsk > ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE}
   fi
   WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY=$(cat ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY_FILE})
-  ## for remote WG VPN access into home network, add WG_HOMEFIOS_ETH0_NET_CIDR for routing
+  ## for mobile device WG VPN access into home network, add WG_HOME_LAN_PRIV_NET_CIDR for routing
   if [[ "$WG_CLOUDVPN_WGS1_CLIENT" == "$WG_LOCALVPN_WGC0_HOSTNAME" ]]
   then
-    ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET=", ${WG_HOMEFIOS_ETH0_NET_CIDR}"
+    ALLOWEDIPS_ADD_HOME_LAN_PRIV_NET=", ${WG_HOME_LAN_PRIV_NET_CIDR}"
   else
-    ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET=""
+    ALLOWEDIPS_ADD_HOME_LAN_PRIV_NET=""
   fi
 cat << EOF >> ${WG_CLOUDVPN_WGS1_CONFIG_FILE}
 [Peer]
 PublicKey = ${WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY}
 PresharedKey = ${WG_CLOUDVPN_WGS1_CLIENT_PRESHARE_KEY}
-AllowedIPs = ${WG_CLOUDVPN_WGS1_CLIENT_IP_CIDR}${ALLOWEDIPS_ADD_HOMEFIOS_ETH0_NET}
+AllowedIPs = ${WG_CLOUDVPN_WGS1_CLIENT_IP_CIDR}${ALLOWEDIPS_ADD_HOME_LAN_PRIV_NET}
 
 EOF
 
