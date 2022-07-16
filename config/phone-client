@@ -3,5 +3,6 @@
 ## phone-client
 ##
 
+## this is the mobile devices's WG information to peer with CLOUDVPN WGS1
 WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY=iI2G1hfaKrVpEwI1AucbaMxRHXCUEtyCimiR1ts/RzY=
 WG_CLOUDVPN_WGS1_CLIENT_IP_END="31"
