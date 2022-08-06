@@ -44,14 +44,18 @@ then
   DNSCRYPT_PROXY_BLOCKLIST_SCRIPT=${DNSCRYPT_PROXY_PATH}/generate-domains-blocklist.py
   DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF=${DNSCRYPT_PROXY_PATH}/domains-blocklist.conf
   DNSCRYPT_PROXY_BLOCKED_NAMES_CONF=${DNSCRYPT_PROXY_PATH}/blocked-names.txt
+  DNSCRYPT_PROXY_ALLOWED_NAMES_CONF=${DNSCRYPT_PROXY_PATH}/allowed-names.txt
   DNSCRYPT_PROXY_TIME_RESTRICTED_CONF=${DNSCRYPT_PROXY_PATH}/domains-time-restricted.txt
   touch ${DNSCRYPT_PROXY_TIME_RESTRICTED_CONF}
   DNSCRYPT_PROXY_ALLOW_LIST_CONF=${DNSCRYPT_PROXY_PATH}/domains-allowlist.txt
   touch ${DNSCRYPT_PROXY_ALLOW_LIST_CONF}
   echo "https://dblw.oisd.nl/" > ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
   echo "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" >> ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF}
+  echo "spot.im" > ${DNSCRYPT_PROXY_ALLOWED_NAMES_CONF}
   sed -i "/blocked_names_file =/c\blocked_names_file = 'blocked-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   sed -i "/log_file = 'blocked-names.log'/c\log_file = 'blocked-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+  sed -i "/allowed_names_file = 'allowed-names.txt'/c\allowed_names_file = 'allowed-names.txt'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
+  sed -i "/log_file = 'allowed-names.log'/c\log_file = 'allowed-names.log'" ${DNSCRYPT_PROXY_TOML_FILE_PATH}
   ## For automated background updates, the script can be run as a cron job
   DNSCRYPT_PROXY_BLOCKLIST_RUNCMD="python3 ${DNSCRYPT_PROXY_BLOCKLIST_SCRIPT} -c ${DNSCRYPT_PROXY_BLOCKLIST_DOMAIN_CONF} -o ${DNSCRYPT_PROXY_BLOCKED_NAMES_CONF} -r ${DNSCRYPT_PROXY_TIME_RESTRICTED_CONF} -a ${DNSCRYPT_PROXY_ALLOW_LIST_CONF}"
   set +e
