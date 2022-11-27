@@ -41,7 +41,7 @@ then
 fi
 
 ## update home ip & fqdn in /etc/hosts
-sed -i "/${fqdn_to_dig_for_home_ip}/c\${home__ip__for_etc_hosts} ${fqdn_to_dig_for_home_ip}" /etc/hosts
+sed -i "/${fqdn_to_dig_for_home_ip}/c${home__ip__for_etc_hosts} ${fqdn_to_dig_for_home_ip}" /etc/hosts
 
 ## update ufw rules
 echo updating the ufw rules for the new homeip
