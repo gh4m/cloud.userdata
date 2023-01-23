@@ -1,0 +1,8 @@
+
+##
+## pixel7-client
+##
+
+## this is the mobile devices's WG information to peer with CLOUDVPN WGS1
+WG_CLOUDVPN_WGS1_CLIENT_PUBLIC_KEY=Bsb7Gx3DlOmqti6hwqpp1aHVghET/yjKSEYoENA9TWw=
+WG_CLOUDVPN_WGS1_CLIENT_IP_END="32"

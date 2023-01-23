@@ -15,4 +15,4 @@ WG_CLOUDVPN_WGS1_IP_END="10"
 WG_CLOUDVPN_WGS1_DNSCRYPT_PROXY_BLOCKING="YES"
 
 ## client peer file in config/<name>-client for each <name> in CLIENT_LIST
-WG_CLOUDVPN_WGS1_CLIENT_LIST="wire-general phone"
+WG_CLOUDVPN_WGS1_CLIENT_LIST="wire-general phone pixel7"
