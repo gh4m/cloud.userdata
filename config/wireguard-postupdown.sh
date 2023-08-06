@@ -16,12 +16,12 @@ set -u
 if [[ "$#" -ne 2 ]]; then
 	echo "${WG_POST_UPDOWN_ERR_MSG}"
 fi
-if echo ${WG_POST_UPDOWN_TYPE} | egrep -v '^cloud$' > /dev/null
+if echo ${WG_POST_UPDOWN_TYPE} | grep -E -v '^cloud$' > /dev/null
 then
     echo "${WG_POST_UPDOWN_ERR_MSG}"
     exit 5
 fi
-if echo ${WG_POST_UPDOWN_ACTION} | egrep -v '^up$|^down$' > /dev/null
+if echo ${WG_POST_UPDOWN_ACTION} | grep -E -v '^up$|^down$' > /dev/null
 then
     echo "${WG_POST_UPDOWN_ERR_MSG}"
     exit 5
