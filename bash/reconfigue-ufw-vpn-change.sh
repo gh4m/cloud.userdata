@@ -47,7 +47,7 @@ if [[ "$vpn_cidr_previous_value" != "${not_found_text}" && "$vpn_cidr_current__v
 then
   echo updating the ufw rules for the new vpnip
   ## update inbound rules
-  $ufw_cmd status | grep "\s${vpn__ip__previous_value}\s*$" | egrep '^22/tcp' | while read rn
+  $ufw_cmd status | grep "\s${vpn__ip__previous_value}\s*$" | grep -E '^22/tcp' | while read rn
   do
     echo found previous inbound ufw rule: $rn
     if [[ "$vpn_cidr_previous_value" == "Anywhere" ]]

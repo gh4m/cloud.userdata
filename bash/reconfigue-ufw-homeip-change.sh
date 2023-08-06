@@ -47,7 +47,7 @@ sed -i "/${fqdn_to_dig_for_home_ip}/c${home__ip__for_etc_hosts} ${fqdn_to_dig_fo
 echo updating the ufw rules for the new homeip
 ## update inbound rules
 ## grepping for port as matching "Anywhere" is not always rule unique to home IP
-$ufw_cmd status | grep "\s${home__ip__previous_value}\s*$" | egrep '^22/tcp' | while read rn
+$ufw_cmd status | grep "\s${home__ip__previous_value}\s*$" | grep -E '^22/tcp' | while read rn
 do
   echo found previous inbound ufw rule: $rn
   if [[ "$home_cidr_previous_value" == "Anywhere" ]]
